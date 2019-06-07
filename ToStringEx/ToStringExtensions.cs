@@ -24,9 +24,13 @@ namespace ToStringEx
             {
                 return obj.ToString();
             }
+            else if (t.IsArray)
+            {
+                return new ArrayFormatter().Format((Array)obj);
+            }
             else if (obj is IEnumerable source)
             {
-                return IEnumerableToStringEx(source);
+                return new EnumerableFormatter().Format(source);
             }
             else
             {
@@ -51,9 +55,6 @@ namespace ToStringEx
 
         private static IEnumerable<string> EnumerateTupleLike(this IEnumerable<(string Name, string Value)> source)
             => source.Select(t => t.Value);
-
-        private static string IEnumerableToStringEx(IEnumerable source)
-            => string.Format("{{{0}}}", string.Join(", ", source.Cast<object>().Select(obj => obj.ToStringEx())));
 
         public static string ToStringEx<T>(this T obj, IFormatterEx<T> formatter)
         {

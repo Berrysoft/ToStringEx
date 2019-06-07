@@ -36,6 +36,13 @@ namespace ToStringEx.Test
         }
 
         [TestMethod]
+        public void ArrayTest()
+        {
+            int[,] a2 = new int[,] { { 0xA, 0xB, 0xC }, { 0xD, 0xE, 0xF } };
+            Assert.AreEqual("{{0A, 0B, 0C}, {0D, 0E, 0F}}", a2.ToStringEx(new ArrayFormatter<int>(new FormattableFormatter<int>("X2"))));
+        }
+
+        [TestMethod]
         public void EnumerableTest()
         {
             int[][] twodarr = new int[][] { new int[] { 1, 2, 3 }, new int[] { 4, 5, 6 }, new int[] { 7, 8, 9 } };

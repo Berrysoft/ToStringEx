@@ -26,6 +26,15 @@ namespace ToStringEx.Test
         }
 
         [TestMethod]
+        public void HighRankArrayToString()
+        {
+            int[,] a2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            Assert.AreEqual("{{1, 2, 3}, {4, 5, 6}}", a2.ToStringEx());
+            int[,,] a3 = new int[,,] { { { 1, 2, 3 }, { 4, 5, 6 } }, { { 7, 8, 9 }, { 10, 11, 12 } } };
+            Assert.AreEqual("{{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}}", a3.ToStringEx());
+        }
+
+        [TestMethod]
         public void IEnumerableToString()
         {
             int[] a = new int[] { 1, 2, 3, 4, 5 };
