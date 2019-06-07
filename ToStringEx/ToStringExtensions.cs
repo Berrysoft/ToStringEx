@@ -10,6 +10,7 @@ namespace ToStringEx
     {
         public static string ToStringEx(this object obj)
         {
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
             Type t = obj.GetType();
             if (t.FullName.StartsWith("System.ValueTuple`"))
             {
@@ -53,5 +54,13 @@ namespace ToStringEx
 
         private static string IEnumerableToStringEx(IEnumerable source)
             => string.Format("{{{0}}}", string.Join(", ", source.Cast<object>().Select(obj => obj.ToStringEx())));
+
+        public static string ToStringEx<T>(this T obj, IFormatterEx<T> formatter)
+        {
+            if (formatter == null)
+                return obj.ToStringEx();
+            else
+                return formatter.Format(obj);
+        }
     }
 }
