@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ToStringEx.Test
@@ -52,9 +53,9 @@ namespace ToStringEx.Test
         [TestMethod]
         public void MultiTest()
         {
-            var f = new MultiFormatter(new TupleFormatter(), new EnumerableFormatter<int>());
-            Assert.AreEqual("(1, abc)", (1, "abc").ToStringEx(f));
-            Assert.AreEqual("{1, 2, 3}", new int[] { 1, 2, 3 }.ToStringEx(f));
+            var f = new MultiFormatter(new EnumerableFormatter<int>(), new TupleFormatter(new FormattableFormatter<int>("X2")));
+            Assert.AreEqual("(01, abc)", (1, "abc").ToStringEx(f));
+            Assert.AreEqual("{1, 2, 3}", new int[] { 1, 2, 3 }.AsEnumerable().ToStringEx(f));
         }
     }
 }

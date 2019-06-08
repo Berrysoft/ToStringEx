@@ -50,12 +50,12 @@ namespace ToStringEx
                 return formatter.Format(obj);
         }
 
-        internal static string ToStringEx(this object obj, Dictionary<Type, IFormatterEx> formatters)
+        internal static string ToStringEx(this object obj, IEnumerable<IFormatterEx> formatters)
         {
             Type t = obj.GetType();
-            if (formatters != null && formatters.TryGetValue(t, out IFormatterEx formatter))
+            if (formatters != null)
             {
-                return obj.ToStringEx(formatter);
+                return obj.ToStringEx(formatters.FirstOrDefault(f => f.TargetType.IsAssignableFrom(t)));
             }
             else
             {
@@ -63,12 +63,12 @@ namespace ToStringEx
             }
         }
 
-        internal static IEnumerable<(string Name, string Value)> EnumerateFields(this object obj, Dictionary<Type, IFormatterEx> formatters)
+        internal static IEnumerable<(string Name, string Value)> EnumerateFields(this object obj, IEnumerable<IFormatterEx> formatters)
             => from f in obj.GetType().GetFields()
                where f.Attributes.HasFlag(FieldAttributes.Public)
                select (f.Name, f.GetValue(obj).ToStringEx(formatters));
 
-        internal static IEnumerable<(string Name, string Value)> EnumerateProperties(this object obj, Dictionary<Type, IFormatterEx> formatters)
+        internal static IEnumerable<(string Name, string Value)> EnumerateProperties(this object obj, IEnumerable<IFormatterEx> formatters)
             => from p in obj.GetType().GetProperties()
                where p.CanRead && p.GetGetMethod().IsPublic && p.GetIndexParameters().Length == 0
                select (p.Name, p.GetValue(obj).ToStringEx(formatters));

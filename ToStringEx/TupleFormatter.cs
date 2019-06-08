@@ -7,7 +7,6 @@ namespace ToStringEx
     public class TupleFormatter : MultiFormatterBase, IFormatterEx<object>
     {
         public TupleFormatter() : base() { }
-        public TupleFormatter(IDictionary<Type, IFormatterEx> formatters) : base(formatters) { }
         public TupleFormatter(IEnumerable<IFormatterEx> formatters) : base(formatters) { }
         public TupleFormatter(params IFormatterEx[] formatters) : base(formatters) { }
 

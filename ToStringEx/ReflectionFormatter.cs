@@ -7,7 +7,6 @@ namespace ToStringEx
     public class ReflectionFormatter : MultiFormatterBase, IFormatterEx<object>
     {
         public ReflectionFormatter() : base() { }
-        public ReflectionFormatter(IDictionary<Type, IFormatterEx> formatters) : base(formatters) { }
         public ReflectionFormatter(IEnumerable<IFormatterEx> formatters) : base(formatters) { }
         public ReflectionFormatter(params IFormatterEx[] formatters) : base(formatters) { }
 
