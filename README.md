@@ -1,5 +1,9 @@
 # ToStringEx
 An extension for ToString in .NET Standard.
+
+|NuGet (preview)|
+|-|
+|[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/ToStringEx.svg)](https://www.nuget.org/packages/ToStringEx/)|
 ## Usage
 C#:
 ``` csharp
