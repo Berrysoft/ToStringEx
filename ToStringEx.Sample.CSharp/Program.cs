@@ -9,7 +9,7 @@ namespace ToStringEx.Sample.CSharp
         {
             Console.WriteLine(Enumerable.Range(0, 10).ToStringEx());
             Console.WriteLine((1, new int[,] { { 1, 2 }, { 3, 4 } }).ToStringEx());
-            Console.WriteLine("{0}", new int[] { 0xA, 0xB, 0xC }.ToStringEx(new EnumerableFormatter<int>(new FormattableFormatter<int>("X2"))));
+            Console.WriteLine(new int[] { 0xA, 0xB, 0xC }.ToStringEx(new EnumerableFormatter<int>(new FormattableFormatter<int>("X2"))));
             Console.WriteLine(0xABC.ToStringEx(new FuncFormatter<int>(i => $"0x{i:X}")));
         }
     }
