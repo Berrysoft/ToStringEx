@@ -4,6 +4,25 @@ using System.Linq;
 
 namespace ToStringEx
 {
+    internal static class ReflectionFormatterHelper
+    {
+        public static IEnumerable<(string Name, string Value)> EnumerateFields(this object obj, IEnumerable<IFormatterEx> formatters)
+            => from f in obj.GetType().GetFields()
+               where f.IsPublic
+               select (f.Name, f.GetValue(obj).ToStringEx(formatters));
+
+        public static IEnumerable<(string Name, string Value)> EnumerateProperties(this object obj, IEnumerable<IFormatterEx> formatters)
+            => from p in obj.GetType().GetProperties()
+               where p.CanRead && p.GetGetMethod().IsPublic && p.GetIndexParameters().Length == 0
+               select (p.Name, p.GetValue(obj).ToStringEx(formatters));
+
+        public static IEnumerable<string> EnumeratePropLike(this IEnumerable<(string Name, string Value)> source)
+            => source.Select(t => $"{t.Name}: {t.Value}");
+
+        public static IEnumerable<string> EnumerateTupleLike(this IEnumerable<(string Name, string Value)> source)
+            => source.Select(t => t.Value);
+    }
+
     /// <summary>
     /// Represents a formatter which formats an object with reflection.
     /// </summary>
