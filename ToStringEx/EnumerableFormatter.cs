@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,8 +19,12 @@ namespace ToStringEx
         public EnumerableFormatter() : base() { }
         public EnumerableFormatter(IFormatterEx<object> formatter) : base(formatter) { }
 
+        public Type TargetType => typeof(IEnumerable);
+
         public string Format(IEnumerable value)
             => string.Format("{{{0}}}", string.Join(", ", value.Cast<object>().Select(obj => obj.ToStringEx(Formatter))));
+
+        string IFormatterEx.Format(object value) => Format((IEnumerable)value);
     }
 
     public class EnumerableFormatter<T> : EnumerableFormatterBase<T>, IFormatterEx<IEnumerable<T>>
@@ -27,7 +32,11 @@ namespace ToStringEx
         public EnumerableFormatter() : base() { }
         public EnumerableFormatter(IFormatterEx<T> formatter) : base(formatter) { }
 
+        public Type TargetType => typeof(IEnumerable<T>);
+
         public string Format(IEnumerable<T> value)
             => string.Format("{{{0}}}", string.Join(", ", value.Select(obj => obj.ToStringEx(Formatter))));
+
+        string IFormatterEx.Format(object value) => Format((IEnumerable<T>)value);
     }
 }

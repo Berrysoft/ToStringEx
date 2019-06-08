@@ -8,6 +8,8 @@ namespace ToStringEx
         public string FormatStr { get; }
         public IFormatProvider Provider { get; }
 
+        public Type TargetType => typeof(T);
+
         public FormattableFormatter() : this(null, null) { }
         public FormattableFormatter(string format) : this(format, null) { }
         public FormattableFormatter(IFormatProvider provider) : this(null, provider) { }
@@ -18,5 +20,7 @@ namespace ToStringEx
         }
 
         public string Format(T value) => value.ToString(FormatStr, Provider);
+
+        string IFormatterEx.Format(object value) => Format((T)value);
     }
 }

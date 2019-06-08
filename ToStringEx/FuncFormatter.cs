@@ -6,6 +6,8 @@ namespace ToStringEx
     {
         public Func<T, string> Func { get; }
 
+        public Type TargetType => typeof(T);
+
         public FuncFormatter(Func<T, string> func) => Func = func;
 
         public string Format(T value)
@@ -15,5 +17,7 @@ namespace ToStringEx
             else
                 return Func(value);
         }
+
+        string IFormatterEx.Format(object value) => Format((T)value);
     }
 }

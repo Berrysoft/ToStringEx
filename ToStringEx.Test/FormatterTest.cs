@@ -48,5 +48,13 @@ namespace ToStringEx.Test
             int[][] twodarr = new int[][] { new int[] { 1, 2, 3 }, new int[] { 4, 5, 6 }, new int[] { 7, 8, 9 } };
             Assert.AreEqual("{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}", twodarr.ToStringEx(new EnumerableFormatter<IEnumerable<int>>(new EnumerableFormatter<int>())));
         }
+
+        [TestMethod]
+        public void MultiTest()
+        {
+            var f = new MultiFormatter(new TupleFormatter(), new EnumerableFormatter<int>());
+            Assert.AreEqual("(1, abc)", (1, "abc").ToStringEx(f));
+            Assert.AreEqual("{1, 2, 3}", new int[] { 1, 2, 3 }.ToStringEx(f));
+        }
     }
 }

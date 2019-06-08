@@ -15,6 +15,8 @@ namespace ToStringEx
         public ArrayFormatter() : base() { }
         public ArrayFormatter(IFormatterEx<T> formatter) : base(formatter) { }
 
+        public Type TargetType => typeof(Array);
+
         public string Format(Array arr)
         {
             int rank = arr.Rank;
@@ -43,5 +45,7 @@ namespace ToStringEx
             builder.Append('}', rank);
             return builder.ToString();
         }
+
+        string IFormatterEx.Format(object value) => Format((Array)value);
     }
 }
