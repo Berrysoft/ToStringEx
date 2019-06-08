@@ -4,19 +4,26 @@ using System.Text;
 
 namespace ToStringEx
 {
-    public class ArrayFormatter : ArrayFormatter<object>
-    {
-        public ArrayFormatter() : base() { }
-        public ArrayFormatter(IFormatterEx<object> formatter) : base(formatter) { }
-    }
-
+    /// <summary>
+    /// Represents a formatter for <see cref="Array"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ArrayFormatter<T> : EnumerableFormatterBase<T>, IFormatterEx<Array>
     {
+        /// <summary>
+        /// Initializes an instance of <see cref="ArrayFormatter{T}"/>.
+        /// </summary>
         public ArrayFormatter() : base() { }
+        /// <summary>
+        /// Initializes an instance of <see cref="ArrayFormatter{T}"/> with a formatter.
+        /// </summary>
+        /// <param name="formatter">The formatter for each element.</param>
         public ArrayFormatter(IFormatterEx<T> formatter) : base(formatter) { }
 
+        /// <inhertidoc/>
         public Type TargetType => typeof(Array);
 
+        /// <inhertidoc/>
         public string Format(Array arr)
         {
             int rank = arr.Rank;
