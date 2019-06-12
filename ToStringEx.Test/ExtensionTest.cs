@@ -8,6 +8,13 @@ namespace ToStringEx.Test
     [TestClass]
     public class ExtensionTest
     {
+        [TestInitialize]
+        public void InitializeComponent()
+        {
+            ToStringExtensions.RegisterProvider(TupleDefaultFormatterProvider.Instance);
+            ToStringExtensions.RegisterProvider(MemoryDefaultFormatterProvider.Instance);
+        }
+
         [TestMethod]
         public void StringToString()
         {
@@ -45,9 +52,11 @@ namespace ToStringEx.Test
         }
 
         [TestMethod]
-        public void SpanToString()
+        public void MemoryToString()
         {
-            Span<int> a = new int[] { 1, 2, 3, 4, 5 };
+            Memory<int> m = new int[] { 1, 2, 3, 4, 5 };
+            Assert.AreEqual("[1, 2, 3, 4, 5]", m.ToStringEx());
+            Span<int> a = m.Span;
             Assert.AreEqual("[1, 2, 3, 4, 5]", a.ToStringEx());
         }
 

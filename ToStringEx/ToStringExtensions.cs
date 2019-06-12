@@ -10,6 +10,19 @@ namespace ToStringEx
     /// </summary>
     public static class ToStringExtensions
     {
+        private static readonly List<IFormatterProviderEx> providers = new List<IFormatterProviderEx>();
+
+        public static void RegisterProvider(IFormatterProviderEx provider)
+        {
+            if (!providers.Contains(provider))
+                providers.Add(provider);
+        }
+
+        public static void UnregisterProvider(IFormatterProviderEx provider)
+        {
+            providers.Remove(provider);
+        }
+
         /// <summary>
         /// Returns a humanize string that represents the current object.
         /// </summary>
@@ -20,11 +33,12 @@ namespace ToStringEx
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             Type t = obj.GetType();
-            if (t.FullName.StartsWith("System.ValueTuple`") || t.FullName.StartsWith("System.Tuple`"))
+            foreach (var provider in providers)
             {
-                return obj.ToStringEx(new TupleFormatter());
+                if (provider.TryGetProvider(t, out IFormatterEx formatter))
+                    return obj.ToStringEx(formatter);
             }
-            else if (t.GetMethod("ToString", Array.Empty<Type>()).DeclaringType == t)
+            if (t.GetMethod("ToString", Array.Empty<Type>()).DeclaringType == t)
             {
                 return obj.ToString();
             }
@@ -51,7 +65,7 @@ namespace ToStringEx
         /// <exception cref="ArgumentNullException">When <paramref name="obj"/> is <see langword="null"/> (<see langword="Nothing"/> in Visual Basic).</exception>
         public static string ToStringEx(this object obj, IFormatterEx formatter)
         {
-            if (formatter == null || !formatter.TargetType.IsAssignableFrom(obj.GetType()))
+            if (formatter == null)
                 return obj.ToStringEx();
             else
                 return formatter.Format(obj);

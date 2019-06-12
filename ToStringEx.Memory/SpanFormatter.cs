@@ -19,7 +19,16 @@ namespace ToStringEx.Memory
 
         public string Format(ReadOnlyMemory<T> value) => formatter.Format(value.Span);
 
-        string IFormatterEx.Format(object value) => Format((ReadOnlyMemory<T>)value);
+        string IFormatterEx.Format(object value)
+        {
+            switch (value)
+            {
+                case Memory<T> mem:
+                    return Format(mem);
+                default:
+                    return Format((ReadOnlyMemory<T>)value);
+            }
+        }
     }
 
     public class SpanFormatter<T> : EnumerableFormatterBase<T>, ISpanFormatterEx<T>
@@ -33,6 +42,8 @@ namespace ToStringEx.Memory
         /// </summary>
         /// <param name="formatter">The formatter for each element.</param>
         public SpanFormatter(IFormatterEx<T> formatter) : base(formatter) { }
+
+        public string Format(Span<T> span) => Format((ReadOnlySpan<T>)span);
 
         public string Format(ReadOnlySpan<T> span)
         {

@@ -1,5 +1,6 @@
 Module Program
     Sub Main()
+        ToStringExtensions.RegisterProvider(TupleDefaultFormatterProvider.Instance)
         Console.WriteLine(Enumerable.Range(0, 10).ToStringEx())
         Console.WriteLine((1, {{1, 2}, {3, 4}}).ToStringEx())
         Console.WriteLine({&HA, &HB, &HC}.ToStringEx(New EnumerableFormatter(Of Integer)(New FormattableFormatter(Of Integer)("X2"))))

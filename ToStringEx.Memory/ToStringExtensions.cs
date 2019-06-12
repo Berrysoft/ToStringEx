@@ -2,7 +2,7 @@
 
 namespace ToStringEx.Memory
 {
-    public static class ToStringExtensions
+    public static class SpanToStringExtensions
     {
         public static string ToStringEx<T>(this Span<T> span)
             => ((ReadOnlySpan<T>)span).ToStringEx();
