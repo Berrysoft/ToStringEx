@@ -6,18 +6,26 @@ using System.Linq;
 namespace ToStringEx
 {
     /// <summary>
-    /// Provides a set of <see langword="static"/> (<see langword="Shared"/> in Visual Basic) methods to perform ToStringEx.
+    /// Provides a set of <see langword="static"/> methods to perform ToStringEx.
     /// </summary>
     public static class ToStringExtensions
     {
         private static readonly List<IFormatterProviderEx> providers = new List<IFormatterProviderEx>();
 
+        /// <summary>
+        /// Registers a formatter provider.
+        /// </summary>
+        /// <param name="provider">An instance of a formatter provider.</param>
         public static void RegisterProvider(IFormatterProviderEx provider)
         {
             if (!providers.Contains(provider))
                 providers.Add(provider);
         }
 
+        /// <summary>
+        /// Unregisters a formatter provider.
+        /// </summary>
+        /// <param name="provider">The instance of the formatter provider.</param>
         public static void UnregisterProvider(IFormatterProviderEx provider)
         {
             providers.Remove(provider);

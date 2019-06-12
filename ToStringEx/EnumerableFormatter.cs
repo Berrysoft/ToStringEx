@@ -80,6 +80,10 @@ namespace ToStringEx
         string IFormatterEx.Format(object value) => Format((IEnumerable)value);
     }
 
+    /// <summary>
+    /// Represents a formatter for <see cref="IEnumerable{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements.</typeparam>
     public class EnumerableFormatter<T> : EnumerableFormatterBase<T>, IFormatterEx<IEnumerable<T>>
     {
         /// <summary>
