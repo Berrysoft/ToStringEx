@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToStringEx.Memory;
 
 namespace ToStringEx.Test
 {
@@ -48,6 +49,13 @@ namespace ToStringEx.Test
         {
             int[][] twodarr = new int[][] { new int[] { 1, 2, 3 }, new int[] { 4, 5, 6 }, new int[] { 7, 8, 9 } };
             Assert.AreEqual("{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}", twodarr.ToStringEx(new EnumerableFormatter<IEnumerable<int>>(new EnumerableFormatter<int>())));
+        }
+
+        [TestMethod]
+        public void MemoryTest()
+        {
+            Memory<int> m = new int[] { 1, 2, 3, 4, 5 };
+            Assert.AreEqual("[1, 2, 3, 4, 5]", m.ToStringEx(new MemoryFormatter<int>()));
         }
 
         [TestMethod]

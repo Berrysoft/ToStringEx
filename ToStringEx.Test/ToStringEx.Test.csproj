@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ToStringEx.Memory\ToStringEx.Memory.csproj" />
     <ProjectReference Include="..\ToStringEx\ToStringEx.csproj" />
   </ItemGroup>
 

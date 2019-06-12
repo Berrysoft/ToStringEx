@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToStringEx.Memory;
 
 namespace ToStringEx.Test
 {
@@ -41,6 +42,13 @@ namespace ToStringEx.Test
             Assert.AreEqual("{1, 2, 3, 4, 5}", a.ToStringEx());
             var q = a.Where(i => i % 2 == 0);
             Assert.AreEqual("{2, 4}", q.ToStringEx());
+        }
+
+        [TestMethod]
+        public void SpanToString()
+        {
+            Span<int> a = new int[] { 1, 2, 3, 4, 5 };
+            Assert.AreEqual("[1, 2, 3, 4, 5]", a.ToStringEx());
         }
 
         class UserDefinedType
