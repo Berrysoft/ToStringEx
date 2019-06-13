@@ -2,57 +2,72 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace ToStringEx
 {
     /// <summary>
     /// Represents a base formatter which formats a set of elements.
     /// </summary>
-    public abstract class EnumerableFormatterBase
+    public abstract class EnumerableFormatterBase : SequenceFormatterBase
     {
-        /// <summary>
-        /// The formatter for each element.
-        /// </summary>
-        public IFormatterEx Formatter { get; }
+        public int MaxCount { get; }
 
-        /// <summary>
-        /// Initializes an instance of <see cref="EnumerableFormatterBase"/>.
-        /// </summary>
-        public EnumerableFormatterBase() : this(null) { }
-        /// <summary>
-        /// Initializes an instance of <see cref="EnumerableFormatterBase"/> with a formatter.
-        /// </summary>
-        /// <param name="formatter">The formatter for each element.</param>
-        public EnumerableFormatterBase(IFormatterEx formatter)
-            => Formatter = formatter;
+        public EnumerableFormatterBase(IFormatterEx formatter, int maxCount) : base(formatter) => MaxCount = maxCount;
     }
     /// <summary>
     /// Represents a base formatter which formats a set of elements.
     /// </summary>
     /// <typeparam name="T">The type of the elements.</typeparam>
-    public abstract class EnumerableFormatterBase<T>
+    public abstract class EnumerableFormatterBase<T> : SequenceFormatterBase<T>
     {
-        /// <summary>
-        /// The formatter for each element.
-        /// </summary>
-        public IFormatterEx<T> Formatter { get; }
+        public int MaxCount { get; }
 
-        /// <summary>
-        /// Initializes an instance of <see cref="EnumerableFormatterBase{T}"/>.
-        /// </summary>
-        public EnumerableFormatterBase() : this(null) { }
-        /// <summary>
-        /// Initializes an instance of <see cref="EnumerableFormatterBase{T}"/> with a formatter.
-        /// </summary>
-        /// <param name="formatter">The formatter for each element.</param>
-        public EnumerableFormatterBase(IFormatterEx<T> formatter)
-            => Formatter = formatter;
+        public EnumerableFormatterBase(IFormatterEx<T> formatter, int maxCount) : base(formatter) => MaxCount = maxCount;
     }
 
     internal static class EnumerableFormatterHelper
     {
-        public static string FormatInternal<T>(this IEnumerable<T> source, Func<T, string> func)
-            => string.Format("{{{0}}}", string.Join(", ", source.Select(func)));
+        public static string FormatInternal<T>(this IEnumerable<T> source, Func<T, string> func, int maxCount)
+        {
+            if (maxCount > 0)
+            {
+                maxCount--;
+                StringBuilder builder = new StringBuilder();
+                builder.Append('{');
+                var e = source.GetEnumerator();
+                if (e.MoveNext())
+                {
+                    builder.Append(func(e.Current));
+                    int i = 1;
+                    for (; i < maxCount && e.MoveNext(); i++)
+                    {
+                        builder.Append(", ");
+                        builder.Append(func(e.Current));
+                    }
+                    if (i == maxCount && e.MoveNext())
+                    {
+                        T c = e.Current;
+                        bool ep = false;
+                        while (e.MoveNext())
+                        {
+                            c = e.Current;
+                            ep = true;
+                        }
+                        builder.Append(", ");
+                        if (ep)
+                            builder.Append("... ");
+                        builder.Append(func(c));
+                    }
+                }
+                builder.Append('}');
+                return builder.ToString();
+            }
+            else
+            {
+                return string.Format("{{{0}}}", string.Join(", ", source.Select(func)));
+            }
+        }
     }
 
     /// <summary>
@@ -63,19 +78,21 @@ namespace ToStringEx
         /// <summary>
         /// Initializes an instance of <see cref="EnumerableFormatter"/>.
         /// </summary>
-        public EnumerableFormatter() : base() { }
+        public EnumerableFormatter() : this(null, 0) { }
         /// <summary>
         /// Initializes an instance of <see cref="EnumerableFormatter"/> with a formatter.
         /// </summary>
         /// <param name="formatter">The formatter for each element.</param>
-        public EnumerableFormatter(IFormatterEx formatter) : base(formatter) { }
+        public EnumerableFormatter(IFormatterEx formatter) : this(formatter, 0) { }
+        public EnumerableFormatter(int maxCount) : this(null, maxCount) { }
+        public EnumerableFormatter(IFormatterEx formatter, int maxCount) : base(formatter, maxCount) { }
 
         /// <inhertidoc/>
         public Type TargetType => typeof(IEnumerable);
 
         /// <inhertidoc/>
         public string Format(IEnumerable value)
-            => value.Cast<object>().FormatInternal(e => e.ToStringEx(Formatter));
+            => value.Cast<object>().FormatInternal(e => e.ToStringEx(Formatter), MaxCount);
 
         string IFormatterEx.Format(object value) => Format((IEnumerable)value);
     }
@@ -89,19 +106,21 @@ namespace ToStringEx
         /// <summary>
         /// Initializes an instance of <see cref="EnumerableFormatter{T}"/>.
         /// </summary>
-        public EnumerableFormatter() : base() { }
+        public EnumerableFormatter() : this(null, 0) { }
         /// <summary>
         /// Initializes an instance of <see cref="EnumerableFormatter{T}"/> with a formatter.
         /// </summary>
         /// <param name="formatter">The formatter for each element.</param>
-        public EnumerableFormatter(IFormatterEx<T> formatter) : base(formatter) { }
+        public EnumerableFormatter(IFormatterEx<T> formatter) : this(formatter, 0) { }
+        public EnumerableFormatter(int maxCount) : this(null, maxCount) { }
+        public EnumerableFormatter(IFormatterEx<T> formatter, int maxCount) : base(formatter, maxCount) { }
 
         /// <inhertidoc/>
         public Type TargetType => typeof(IEnumerable<T>);
 
         /// <inhertidoc/>
         public string Format(IEnumerable<T> value)
-            => value.FormatInternal(e => e.ToStringEx(Formatter));
+            => value.FormatInternal(e => e.ToStringEx(Formatter), MaxCount);
 
         string IFormatterEx.Format(object value) => Format((IEnumerable<T>)value);
     }

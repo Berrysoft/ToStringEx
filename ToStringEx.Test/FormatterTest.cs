@@ -42,6 +42,58 @@ namespace ToStringEx.Test
         {
             int[,] a2 = new int[,] { { 0xA, 0xB, 0xC }, { 0xD, 0xE, 0xF } };
             Assert.AreEqual("{{0A, 0B, 0C}, {0D, 0E, 0F}}", a2.ToStringEx(new ArrayFormatter<int>(new FormattableFormatter<int>("X2"))));
+            Assert.AreEqual(
+@"{{0A, 0B, 0C},
+ {0D, 0E, 0F}}", a2.ToStringEx(new ArrayFormatter<int>(new FormattableFormatter<int>("X2"), true)));
+            int[,,] a3 = new[, ,]
+            { { { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 } },
+              { { 5, 6, 7, 8, 9 },
+                { 5, 6, 7, 8, 9 },
+                { 5, 6, 7, 8, 9 },
+                { 5, 6, 7, 8, 9 },
+                { 5, 6, 7, 8, 9 },
+                { 5, 6, 7, 8, 9 },
+                { 5, 6, 7, 8, 9 } },
+              { { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 } },
+              { { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 } },
+              { { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 },
+                { 1, 2, 3, 4, 5 } } };
+            Assert.AreEqual(@"{{{1, 2, ... 5},
+  {1, 2, ... 5},
+  ...
+  {1, 2, ... 5}},
+ {{5, 6, ... 9},
+  {5, 6, ... 9},
+  ...
+  {5, 6, ... 9}},
+ ...
+ {{1, 2, ... 5},
+  {1, 2, ... 5},
+  ...
+  {1, 2, ... 5}}}", a3.ToStringEx(new ArrayFormatter<int>(true, 3)));
         }
 
         [TestMethod]
@@ -49,6 +101,9 @@ namespace ToStringEx.Test
         {
             int[][] twodarr = new int[][] { new int[] { 1, 2, 3 }, new int[] { 4, 5, 6 }, new int[] { 7, 8, 9 } };
             Assert.AreEqual("{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}", twodarr.ToStringEx(new EnumerableFormatter<IEnumerable<int>>(new EnumerableFormatter<int>())));
+            int[] longarr = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            Assert.AreEqual("{1, 2, 3, ... 10}", longarr.ToStringEx(new EnumerableFormatter<int>(4)));
+            Assert.AreEqual("{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}", longarr.ToStringEx(new EnumerableFormatter<int>(10)));
         }
 
         [TestMethod]
@@ -56,6 +111,7 @@ namespace ToStringEx.Test
         {
             Memory<int> m = new int[] { 1, 2, 3, 4, 5 };
             Assert.AreEqual("[1, 2, 3, 4, 5]", m.ToStringEx(new MemoryFormatter<int>()));
+            Assert.AreEqual("[1, 2, ... 5]", m.ToStringEx(new MemoryFormatter<int>(3)));
             ReadOnlyMemory<char> strmem = "Hello world!".AsMemory();
             Assert.AreEqual("Hello world!", strmem.ToStringEx(new ReadOnlyMemoryFormatter<char>()));
         }

@@ -12,14 +12,10 @@ namespace ToStringEx.Memory
         private readonly SpanFormatter<T> formatter;
 
         /// <summary>
-        /// Initializes an instance of <see cref="MemoryFormatterBase{T}"/>.
-        /// </summary>
-        public MemoryFormatterBase() : this(null) { }
-        /// <summary>
         /// Initializes an instance of <see cref="MemoryFormatterBase{T}"/> with a formatter.
         /// </summary>
         /// <param name="f">The formatter for each element.</param>
-        public MemoryFormatterBase(IFormatterEx<T> f) => formatter = new SpanFormatter<T>(f);
+        public MemoryFormatterBase(IFormatterEx<T> f, int maxCount) => formatter = new SpanFormatter<T>(f, maxCount);
 
         /// <summary>
         /// Formats the memory.
@@ -38,12 +34,14 @@ namespace ToStringEx.Memory
         /// <summary>
         /// Initializes an instance of <see cref="MemoryFormatter{T}"/>.
         /// </summary>
-        public MemoryFormatter() : base() { }
+        public MemoryFormatter() : this(null, 0) { }
         /// <summary>
         /// Initializes an instance of <see cref="MemoryFormatter{T}"/> with a formatter.
         /// </summary>
-        /// <param name="f">The formatter for each element.</param>
-        public MemoryFormatter(IFormatterEx<T> f) : base(f) { }
+        /// <param name="formatter">The formatter for each element.</param>
+        public MemoryFormatter(IFormatterEx<T> formatter) : this(formatter, 0) { }
+        public MemoryFormatter(int maxCount) : this(null, maxCount) { }
+        public MemoryFormatter(IFormatterEx<T> formatter, int maxCount) : base(formatter, maxCount) { }
 
         /// <inhertidoc/>
         public Type TargetType => typeof(Memory<T>);
@@ -63,12 +61,14 @@ namespace ToStringEx.Memory
         /// <summary>
         /// Initializes an instance of <see cref="ReadOnlyMemoryFormatter{T}"/>.
         /// </summary>
-        public ReadOnlyMemoryFormatter() : base() { }
+        public ReadOnlyMemoryFormatter() : this(null, 0) { }
         /// <summary>
         /// Initializes an instance of <see cref="ReadOnlyMemoryFormatter{T}"/> with a formatter.
         /// </summary>
         /// <param name="f">The formatter for each element.</param>
-        public ReadOnlyMemoryFormatter(IFormatterEx<T> f) : base(f) { }
+        public ReadOnlyMemoryFormatter(IFormatterEx<T> formatter) : this(formatter, 0) { }
+        public ReadOnlyMemoryFormatter(int maxCount) : this(null, maxCount) { }
+        public ReadOnlyMemoryFormatter(IFormatterEx<T> formatter, int maxCount) : base(formatter, maxCount) { }
 
         /// <inhertidoc/>
         public Type TargetType => typeof(ReadOnlyMemory<T>);
@@ -88,12 +88,14 @@ namespace ToStringEx.Memory
         /// <summary>
         /// Initializes an instance of <see cref="SpanFormatter{T}"/>.
         /// </summary>
-        public SpanFormatter() : base() { }
+        public SpanFormatter() : this(null, 0) { }
         /// <summary>
         /// Initializes an instance of <see cref="SpanFormatter{T}"/> with a formatter.
         /// </summary>
         /// <param name="formatter">The formatter for each element.</param>
-        public SpanFormatter(IFormatterEx<T> formatter) : base(formatter) { }
+        public SpanFormatter(IFormatterEx<T> formatter) : this(formatter, 0) { }
+        public SpanFormatter(int maxCount) : this(null, maxCount) { }
+        public SpanFormatter(IFormatterEx<T> formatter, int maxCount) : base(formatter, maxCount) { }
 
         /// <inhertidoc/>
         public string Format(Span<T> span) => Format((ReadOnlySpan<T>)span);
@@ -102,7 +104,18 @@ namespace ToStringEx.Memory
         public string Format(ReadOnlySpan<T> span)
         {
             if (typeof(T) == typeof(char) && Formatter == null)
-                return span.ToString();
+            {
+                if (MaxCount > 0 && MaxCount < span.Length)
+                {
+                    StringBuilder builder = new StringBuilder();
+                    builder.Append(span.Slice(0, MaxCount - 1).ToString());
+                    builder.Append("...");
+                    builder.Append(span[span.Length - 1]);
+                    return builder.ToString();
+                }
+                else
+                    return span.ToString();
+            }
             else
             {
                 StringBuilder builder = new StringBuilder();
@@ -111,10 +124,37 @@ namespace ToStringEx.Memory
                 if (e.MoveNext())
                 {
                     builder.Append(e.Current.ToStringEx(Formatter));
-                    while (e.MoveNext())
+                    if (MaxCount > 0 && MaxCount < span.Length)
                     {
-                        builder.Append(", ");
-                        builder.Append(e.Current.ToStringEx(Formatter));
+                        int maxCount = MaxCount - 1;
+                        int i = 1;
+                        for (; i < maxCount && e.MoveNext(); i++)
+                        {
+                            builder.Append(", ");
+                            builder.Append(e.Current.ToStringEx(Formatter));
+                        }
+                        if (i == maxCount && e.MoveNext())
+                        {
+                            T c = e.Current;
+                            bool ep = false;
+                            while (e.MoveNext())
+                            {
+                                c = e.Current;
+                                ep = true;
+                            }
+                            builder.Append(", ");
+                            if (ep)
+                                builder.Append("... ");
+                            builder.Append(c.ToStringEx(Formatter));
+                        }
+                    }
+                    else
+                    {
+                        while (e.MoveNext())
+                        {
+                            builder.Append(", ");
+                            builder.Append(e.Current.ToStringEx(Formatter));
+                        }
                     }
                 }
                 builder.Append(']');
