@@ -57,7 +57,7 @@ namespace ToStringEx.Test
             Memory<int> m = new int[] { 1, 2, 3, 4, 5 };
             Assert.AreEqual("[1, 2, 3, 4, 5]", m.ToStringEx(new MemoryFormatter<int>()));
             ReadOnlyMemory<char> strmem = "Hello world!".AsMemory();
-            Assert.AreEqual("Hello world!", strmem.ToStringEx(new MemoryFormatter<char>()));
+            Assert.AreEqual("Hello world!", strmem.ToStringEx(new ReadOnlyMemoryFormatter<char>()));
         }
 
         [TestMethod]

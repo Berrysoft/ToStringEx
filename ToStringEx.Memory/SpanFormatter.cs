@@ -4,45 +4,79 @@ using System.Text;
 namespace ToStringEx.Memory
 {
     /// <summary>
-    /// Represents a formatter for <see cref="Memory{T}"/> and <see cref="ReadOnlyMemory{T}"/>.
+    /// Represents a base formatter for <see cref="Memory{T}"/> and <see cref="ReadOnlyMemory{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of each element.</typeparam>
-    public class MemoryFormatter<T> : IFormatterEx<Memory<T>>, IFormatterEx<ReadOnlyMemory<T>>
+    public class MemoryFormatterBase<T>
     {
         private readonly SpanFormatter<T> formatter;
 
         /// <summary>
+        /// Initializes an instance of <see cref="MemoryFormatterBase{T}"/>.
+        /// </summary>
+        public MemoryFormatterBase() : this(null) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="MemoryFormatterBase{T}"/> with a formatter.
+        /// </summary>
+        /// <param name="f">The formatter for each element.</param>
+        public MemoryFormatterBase(IFormatterEx<T> f) => formatter = new SpanFormatter<T>(f);
+
+        /// <summary>
+        /// Formats the memory.
+        /// </summary>
+        /// <param name="value">The memory.</param>
+        /// <returns>A humanized string.</returns>
+        protected internal string FormatInternal(ReadOnlyMemory<T> value) => formatter.Format(value.Span);
+    }
+
+    /// <summary>
+    /// Represents a formatter for <see cref="Memory{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of each element.</typeparam>
+    public class MemoryFormatter<T> : MemoryFormatterBase<T>, IFormatterEx<Memory<T>>
+    {
+        /// <summary>
         /// Initializes an instance of <see cref="MemoryFormatter{T}"/>.
         /// </summary>
-        public MemoryFormatter() : this(null) { }
+        public MemoryFormatter() : base() { }
         /// <summary>
         /// Initializes an instance of <see cref="MemoryFormatter{T}"/> with a formatter.
         /// </summary>
         /// <param name="f">The formatter for each element.</param>
-        public MemoryFormatter(IFormatterEx<T> f)
-        {
-            formatter = new SpanFormatter<T>(f);
-        }
+        public MemoryFormatter(IFormatterEx<T> f) : base(f) { }
+
+        /// <inhertidoc/>
+        public Type TargetType => typeof(Memory<T>);
+
+        /// <inhertidoc/>
+        public string Format(Memory<T> value) => FormatInternal(value);
+
+        string IFormatterEx.Format(object value) => Format((Memory<T>)value);
+    }
+
+    /// <summary>
+    /// Represents a formatter for <see cref="ReadOnlyMemory{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of each element.</typeparam>
+    public class ReadOnlyMemoryFormatter<T> : MemoryFormatterBase<T>, IFormatterEx<ReadOnlyMemory<T>>
+    {
+        /// <summary>
+        /// Initializes an instance of <see cref="ReadOnlyMemoryFormatter{T}"/>.
+        /// </summary>
+        public ReadOnlyMemoryFormatter() : base() { }
+        /// <summary>
+        /// Initializes an instance of <see cref="ReadOnlyMemoryFormatter{T}"/> with a formatter.
+        /// </summary>
+        /// <param name="f">The formatter for each element.</param>
+        public ReadOnlyMemoryFormatter(IFormatterEx<T> f) : base(f) { }
 
         /// <inhertidoc/>
         public Type TargetType => typeof(ReadOnlyMemory<T>);
 
         /// <inhertidoc/>
-        public string Format(Memory<T> value) => formatter.Format(value.Span);
+        public string Format(ReadOnlyMemory<T> value) => FormatInternal(value);
 
-        /// <inhertidoc/>
-        public string Format(ReadOnlyMemory<T> value) => formatter.Format(value.Span);
-
-        string IFormatterEx.Format(object value)
-        {
-            switch (value)
-            {
-                case Memory<T> mem:
-                    return Format(mem);
-                default:
-                    return Format((ReadOnlyMemory<T>)value);
-            }
-        }
+        string IFormatterEx.Format(object value) => Format((ReadOnlyMemory<T>)value);
     }
 
     /// <summary>

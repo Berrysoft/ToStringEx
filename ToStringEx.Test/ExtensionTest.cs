@@ -59,6 +59,8 @@ namespace ToStringEx.Test
         {
             Memory<int> m = new int[] { 1, 2, 3, 4, 5 };
             Assert.AreEqual("[1, 2, 3, 4, 5]", m.ToStringEx());
+            ReadOnlyMemory<int> rdm = m;
+            Assert.AreEqual("[1, 2, 3, 4, 5]", rdm.ToStringEx());
             Span<int> a = m.Span;
             Assert.AreEqual("[1, 2, 3, 4, 5]", a.ToStringEx());
         }

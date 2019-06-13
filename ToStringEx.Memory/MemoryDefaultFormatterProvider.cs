@@ -17,10 +17,16 @@ namespace ToStringEx.Memory
         /// <inhertidoc/>
         public bool TryGetProvider(Type t, out IFormatterEx formatter)
         {
-            if (t.FullName.StartsWith("System.Memory`1") || t.FullName.StartsWith("System.ReadOnlyMemory`1"))
+            if (t.FullName.StartsWith("System.Memory`1"))
             {
                 Type[] types = t.GenericTypeArguments;
                 formatter = (IFormatterEx)Activator.CreateInstance(Type.GetType("ToStringEx.Memory.MemoryFormatter`1").MakeGenericType(types));
+                return true;
+            }
+            else if (t.FullName.StartsWith("System.ReadOnlyMemory`1"))
+            {
+                Type[] types = t.GenericTypeArguments;
+                formatter = (IFormatterEx)Activator.CreateInstance(Type.GetType("ToStringEx.Memory.ReadOnlyMemoryFormatter`1").MakeGenericType(types));
                 return true;
             }
             else

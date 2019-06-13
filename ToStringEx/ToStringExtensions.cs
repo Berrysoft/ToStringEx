@@ -59,7 +59,7 @@ namespace ToStringEx
         /// <exception cref="ArgumentNullException">When <paramref name="obj"/> is <see langword="null"/> (<see langword="Nothing"/> in Visual Basic).</exception>
         public static string ToStringEx<T>(this T obj, IFormatterEx<T> formatter)
         {
-            if (formatter == null)
+            if (formatter == null || !formatter.TargetType.IsAssignableFrom(typeof(T)))
                 return obj.ToStringEx();
             else
                 return formatter.Format(obj);
