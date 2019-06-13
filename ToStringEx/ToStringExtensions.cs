@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,26 +9,11 @@ namespace ToStringEx
     /// </summary>
     public static class ToStringExtensions
     {
-        private static readonly List<IFormatterProviderEx> providers = new List<IFormatterProviderEx>();
-
+        private static readonly List<IFormatterProviderEx> formatterProviders = new List<IFormatterProviderEx>();
         /// <summary>
-        /// Registers a formatter provider.
+        /// The formatter providers for <see cref="ToStringEx(object)"/>.
         /// </summary>
-        /// <param name="provider">An instance of a formatter provider.</param>
-        public static void RegisterProvider(IFormatterProviderEx provider)
-        {
-            if (!providers.Contains(provider))
-                providers.Add(provider);
-        }
-
-        /// <summary>
-        /// Unregisters a formatter provider.
-        /// </summary>
-        /// <param name="provider">The instance of the formatter provider.</param>
-        public static void UnregisterProvider(IFormatterProviderEx provider)
-        {
-            providers.Remove(provider);
-        }
+        public static IList<IFormatterProviderEx> FormatterProviders => formatterProviders;
 
         /// <summary>
         /// Returns a humanize string that represents the current object.
@@ -41,27 +25,13 @@ namespace ToStringEx
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             Type t = obj.GetType();
-            foreach (var provider in providers)
+            foreach (var provider in FormatterProviders)
             {
                 if (provider.TryGetProvider(t, out IFormatterEx formatter))
                     return obj.ToStringEx(formatter);
             }
-            if (t.GetMethod("ToString", Array.Empty<Type>()).DeclaringType == t)
-            {
-                return obj.ToString();
-            }
-            else if (t.IsArray)
-            {
-                return ((Array)obj).ToStringEx(new ArrayFormatter());
-            }
-            else if (obj is IEnumerable source)
-            {
-                return source.ToStringEx(new EnumerableFormatter());
-            }
-            else
-            {
-                return obj.ToStringEx(new ReflectionFormatter());
-            }
+            ReflectionDefaultFormatterProvider.Instance.TryGetProvider(t, out IFormatterEx defFormatter);
+            return defFormatter.Format(obj);
         }
 
         /// <summary>

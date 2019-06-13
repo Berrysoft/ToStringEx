@@ -11,8 +11,9 @@ namespace ToStringEx.Test
         [TestInitialize]
         public void InitializeComponent()
         {
-            ToStringExtensions.RegisterProvider(TupleDefaultFormatterProvider.Instance);
-            ToStringExtensions.RegisterProvider(MemoryDefaultFormatterProvider.Instance);
+            ToStringExtensions.FormatterProviders.Add(TupleDefaultFormatterProvider.Instance);
+            ToStringExtensions.FormatterProviders.Add(EnumerableDefaultFormatterProvider.Instance);
+            ToStringExtensions.FormatterProviders.Add(MemoryDefaultFormatterProvider.Instance);
         }
 
         [TestMethod]
@@ -20,6 +21,8 @@ namespace ToStringEx.Test
         {
             string a = "Hello world!";
             Assert.AreEqual(a, a.ToStringEx());
+            char[] arr = a.ToCharArray();
+            Assert.AreEqual(a, arr.ToStringEx());
         }
 
         [TestMethod]

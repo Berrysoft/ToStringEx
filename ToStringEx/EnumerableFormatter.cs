@@ -105,4 +105,29 @@ namespace ToStringEx
 
         string IFormatterEx.Format(object value) => Format((IEnumerable<T>)value);
     }
+
+    /// <summary>
+    /// Represents a formatter for <see cref="IEnumerable{Char}"/>.
+    /// </summary>
+    public class CharEnumerableFormatter : IFormatterEx<IEnumerable<char>>
+    {
+        /// <inhertidoc/>
+        public Type TargetType => typeof(IEnumerable<char>);
+
+        /// <inhertidoc/>
+        public string Format(IEnumerable<char> value)
+        {
+            if (value is string str)
+            {
+                return str;
+            }
+            else
+            {
+                char[] arr = value.ToArray();
+                return new string(arr);
+            }
+        }
+
+        string IFormatterEx.Format(object value) => Format((IEnumerable<char>)value);
+    }
 }
