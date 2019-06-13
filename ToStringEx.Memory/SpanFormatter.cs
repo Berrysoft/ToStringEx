@@ -67,7 +67,7 @@ namespace ToStringEx.Memory
         /// <inhertidoc/>
         public string Format(ReadOnlySpan<T> span)
         {
-            if (typeof(T) == typeof(string) && Formatter == null)
+            if (typeof(T) == typeof(char) && Formatter == null)
                 return span.ToString();
             else
             {
