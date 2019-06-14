@@ -31,6 +31,6 @@ namespace ToStringEx
         public string Format(object obj)
             => string.Format(
                     "({0})",
-                    string.Join(", ", obj.EnumerateFields(Formatters).EnumerateTupleLike().Concat(obj.EnumerateProperties(Formatters).EnumerateTupleLike())));
+                    string.Join(", ", obj.EnumerateFields(Formatters).Concat(obj.EnumerateProperties(Formatters)).Select(t => t.Value)));
     }
 }

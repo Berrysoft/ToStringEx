@@ -6,7 +6,7 @@ namespace ToStringEx
 {
     internal static class ArrayFormatterHelper
     {
-        public static string FormatInternal<T>(this Array arr, Func<T, string> func, bool useReturn, int[] maxCount)
+        public static string FormatInternal<T>(this Array arr, Func<T, string> func, bool multiLine, int[] maxCount)
         {
             int rank = arr.Rank;
             int[] lens = Enumerable.Range(0, rank).Select(r => arr.GetLength(r)).ToArray();
@@ -43,7 +43,7 @@ namespace ToStringEx
                     builder.Append(',');
                     if (indices[i] == lens[i] - 1 && ep)
                     {
-                        if (useReturn && i != rank - 1)
+                        if (multiLine && i != rank - 1)
                         {
                             builder.AppendLine();
                             builder.Append(' ', rank - repeat);
@@ -52,7 +52,7 @@ namespace ToStringEx
                             builder.Append(' ');
                         builder.Append("...");
                     }
-                    if (useReturn && repeat > 0)
+                    if (multiLine && repeat > 0)
                     {
                         builder.AppendLine();
                         builder.Append(' ', rank - repeat);
@@ -67,15 +67,30 @@ namespace ToStringEx
         }
     }
 
+    /// <summary>
+    /// Represents a base formatter for <see cref="Array"/>.
+    /// </summary>
     public abstract class ArrayFormatterBase : SequenceFormatterBase, IFormatterEx<Array>
     {
+        /// <summary>
+        /// The maximum count of each rank, or every rank if there's only one element.
+        /// </summary>
         public int[] MaxCount { get; }
 
-        public bool UseReturn { get; }
+        /// <summary>
+        /// Determines whether to format the array in multi-line.
+        /// </summary>
+        public bool MultiLine { get; }
 
-        public ArrayFormatterBase(IFormatterEx formatter, bool useReturn, int[] maxCount) : base(formatter)
+        /// <summary>
+        /// Initializes an instance of <see cref="ArrayFormatterBase"/>.
+        /// </summary>
+        /// <param name="formatter">The formatter for each element.</param>
+        /// <param name="multiLine">Whether to format the array in multi-line.</param>
+        /// <param name="maxCount">The maximum count of each rank, or every rank if there's only one element.</param>
+        public ArrayFormatterBase(IFormatterEx formatter, bool multiLine, int[] maxCount) : base(formatter)
         {
-            UseReturn = useReturn;
+            MultiLine = multiLine;
             MaxCount = maxCount;
         }
 
@@ -97,12 +112,23 @@ namespace ToStringEx
         /// Initializes an instance of <see cref="ArrayFormatter"/>.
         /// </summary>
         public ArrayFormatter() : this(null) { }
-        public ArrayFormatter(bool useReturn, params int[] maxCount) : this(null, useReturn, maxCount) { }
-        public ArrayFormatter(IFormatterEx formatter, bool useReturn = false, params int[] maxCount) : base(formatter, useReturn, maxCount) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="ArrayFormatter"/>.
+        /// </summary>
+        /// <param name="multiLine">Whether to format the array in multi-line.</param>
+        /// <param name="maxCount">The maximum count of each rank, or every rank if there's only one element.</param>
+        public ArrayFormatter(bool multiLine, params int[] maxCount) : this(null, multiLine, maxCount) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="ArrayFormatter"/>.
+        /// </summary>
+        /// <param name="formatter">The formatter for each element.</param>
+        /// <param name="multiLine">Whether to format the array in multi-line.</param>
+        /// <param name="maxCount">The maximum count of each rank, or every rank if there's only one element.</param>
+        public ArrayFormatter(IFormatterEx formatter, bool multiLine = false, params int[] maxCount) : base(formatter, multiLine, maxCount) { }
 
         /// <inhertidoc/>
         public override string Format(Array arr)
-            => arr.FormatInternal<object>(e => e.ToStringEx(Formatter), UseReturn, MaxCount);
+            => arr.FormatInternal<object>(e => e.ToStringEx(Formatter), MultiLine, MaxCount);
     }
 
     /// <summary>
@@ -115,11 +141,22 @@ namespace ToStringEx
         /// Initializes an instance of <see cref="ArrayFormatter{T}"/>.
         /// </summary>
         public ArrayFormatter() : this(null) { }
-        public ArrayFormatter(bool useReturn = false, params int[] maxCount) : this(null, useReturn, maxCount) { }
-        public ArrayFormatter(IFormatterEx<T> formatter, bool useReturn = false, params int[] maxCount) : base(formatter, useReturn, maxCount) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="ArrayFormatter{T}"/>.
+        /// </summary>
+        /// <param name="multiLine">Whether to format the array in multi-line.</param>
+        /// <param name="maxCount">The maximum count of each rank, or every rank if there's only one element.</param>
+        public ArrayFormatter(bool multiLine = false, params int[] maxCount) : this(null, multiLine, maxCount) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="ArrayFormatter{T}"/>.
+        /// </summary>
+        /// <param name="formatter">The formatter for each element.</param>
+        /// <param name="multiLine">Whether to format the array in multi-line.</param>
+        /// <param name="maxCount">The maximum count of each rank, or every rank if there's only one element.</param>
+        public ArrayFormatter(IFormatterEx<T> formatter, bool multiLine = false, params int[] maxCount) : base(formatter, multiLine, maxCount) { }
 
         /// <inhertidoc/>
         public override string Format(Array arr)
-            => arr.FormatInternal<T>(e => e.ToStringEx(Formatter), UseReturn, MaxCount);
+            => arr.FormatInternal<T>(e => e.ToStringEx(Formatter), MultiLine, MaxCount);
     }
 }

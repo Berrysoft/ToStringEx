@@ -24,12 +24,6 @@ namespace ToStringEx
         /// <param name="formatters">The set of formatters.</param>
         public MultiFormatterBase(IEnumerable<IFormatterEx> formatters)
             => Formatters = new List<IFormatterEx>(formatters);
-        /// <summary>
-        /// Initializes an instance of <see cref="MultiFormatterBase"/> with a set of formatters.
-        /// </summary>
-        /// <param name="formatters">The set of formatters.</param>
-        public MultiFormatterBase(params IFormatterEx[] formatters)
-            : this(formatters.AsEnumerable()) { }
     }
 
     /// <summary>

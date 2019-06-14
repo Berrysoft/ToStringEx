@@ -123,5 +123,16 @@ namespace ToStringEx.Test
             Assert.AreEqual("(01, abc)", (1, "abc").ToStringEx(f));
             Assert.AreEqual("{1, 2, 3}", new int[] { 1, 2, 3 }.AsEnumerable().ToStringEx(f));
         }
+
+        [TestMethod]
+        public void ReflectionTest()
+        {
+            var c = new { Key1 = 123, Key2 = "abc" };
+            Assert.AreEqual(
+@"{
+  Key1: 123,
+  Key2: abc,
+}", c.ToStringEx(new ReflectionFormatter(true)));
+        }
     }
 }

@@ -1,5 +1,8 @@
 ﻿namespace ToStringEx
 {
+    /// <summary>
+    /// Represents a base formatter for sequences.
+    /// </summary>
     public abstract class SequenceFormatterBase
     {
         /// <summary>
@@ -14,6 +17,10 @@
         public SequenceFormatterBase(IFormatterEx formatter) => Formatter = formatter;
     }
 
+    /// <summary>
+    /// Represents a base formatter for sequences.
+    /// </summary>
+    /// <typeparam name="T">The type of each element.</typeparam>
     public abstract class SequenceFormatterBase<T>
     {
         /// <summary>

@@ -15,6 +15,7 @@ namespace ToStringEx.Memory
         /// Initializes an instance of <see cref="MemoryFormatterBase{T}"/> with a formatter.
         /// </summary>
         /// <param name="f">The formatter for each element.</param>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public MemoryFormatterBase(IFormatterEx<T> f, int maxCount) => formatter = new SpanFormatter<T>(f, maxCount);
 
         /// <summary>
@@ -40,7 +41,16 @@ namespace ToStringEx.Memory
         /// </summary>
         /// <param name="formatter">The formatter for each element.</param>
         public MemoryFormatter(IFormatterEx<T> formatter) : this(formatter, 0) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="MemoryFormatter{T}"/> with maximum count.
+        /// </summary>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public MemoryFormatter(int maxCount) : this(null, maxCount) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="MemoryFormatter{T}"/> with a formatter and maximum count.
+        /// </summary>
+        /// <param name="formatter">The formatter for each element.</param>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public MemoryFormatter(IFormatterEx<T> formatter, int maxCount) : base(formatter, maxCount) { }
 
         /// <inhertidoc/>
@@ -65,9 +75,18 @@ namespace ToStringEx.Memory
         /// <summary>
         /// Initializes an instance of <see cref="ReadOnlyMemoryFormatter{T}"/> with a formatter.
         /// </summary>
-        /// <param name="f">The formatter for each element.</param>
+        /// <param name="formatter">The formatter for each element.</param>
         public ReadOnlyMemoryFormatter(IFormatterEx<T> formatter) : this(formatter, 0) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="ReadOnlyMemoryFormatter{T}"/> with maximum count.
+        /// </summary>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public ReadOnlyMemoryFormatter(int maxCount) : this(null, maxCount) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="ReadOnlyMemoryFormatter{T}"/> with a formatter and maximum count.
+        /// </summary>
+        /// <param name="formatter">The formatter for each element.</param>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public ReadOnlyMemoryFormatter(IFormatterEx<T> formatter, int maxCount) : base(formatter, maxCount) { }
 
         /// <inhertidoc/>
@@ -94,7 +113,16 @@ namespace ToStringEx.Memory
         /// </summary>
         /// <param name="formatter">The formatter for each element.</param>
         public SpanFormatter(IFormatterEx<T> formatter) : this(formatter, 0) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="SpanFormatter{T}"/> with maximum count.
+        /// </summary>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public SpanFormatter(int maxCount) : this(null, maxCount) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="SpanFormatter{T}"/> with a formatter and maximum count.
+        /// </summary>
+        /// <param name="formatter">The formatter for each element.</param>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public SpanFormatter(IFormatterEx<T> formatter, int maxCount) : base(formatter, maxCount) { }
 
         /// <inhertidoc/>

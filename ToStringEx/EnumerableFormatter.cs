@@ -11,8 +11,16 @@ namespace ToStringEx
     /// </summary>
     public abstract class EnumerableFormatterBase : SequenceFormatterBase
     {
+        /// <summary>
+        /// Maximum count of the elements.
+        /// </summary>
         public int MaxCount { get; }
 
+        /// <summary>
+        /// Initializes an instance of <see cref="EnumerableFormatterBase"/>
+        /// </summary>
+        /// <param name="formatter">The formatter for each element.</param>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public EnumerableFormatterBase(IFormatterEx formatter, int maxCount) : base(formatter) => MaxCount = maxCount;
     }
     /// <summary>
@@ -21,8 +29,16 @@ namespace ToStringEx
     /// <typeparam name="T">The type of the elements.</typeparam>
     public abstract class EnumerableFormatterBase<T> : SequenceFormatterBase<T>
     {
+        /// <summary>
+        /// Maximum count of the elements.
+        /// </summary>
         public int MaxCount { get; }
 
+        /// <summary>
+        /// Initializes an instance of <see cref="EnumerableFormatterBase{T}"/>
+        /// </summary>
+        /// <param name="formatter">The formatter for each element.</param>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public EnumerableFormatterBase(IFormatterEx<T> formatter, int maxCount) : base(formatter) => MaxCount = maxCount;
     }
 
@@ -84,7 +100,16 @@ namespace ToStringEx
         /// </summary>
         /// <param name="formatter">The formatter for each element.</param>
         public EnumerableFormatter(IFormatterEx formatter) : this(formatter, 0) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="EnumerableFormatter"/> with maximum count.
+        /// </summary>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public EnumerableFormatter(int maxCount) : this(null, maxCount) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="EnumerableFormatter"/> with a formatter and maximum count.
+        /// </summary>
+        /// <param name="formatter">The formatter for each element.</param>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public EnumerableFormatter(IFormatterEx formatter, int maxCount) : base(formatter, maxCount) { }
 
         /// <inhertidoc/>
@@ -112,7 +137,16 @@ namespace ToStringEx
         /// </summary>
         /// <param name="formatter">The formatter for each element.</param>
         public EnumerableFormatter(IFormatterEx<T> formatter) : this(formatter, 0) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="EnumerableFormatter{T}"/> with maximum count.
+        /// </summary>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public EnumerableFormatter(int maxCount) : this(null, maxCount) { }
+        /// <summary>
+        /// Initializes an instance of <see cref="EnumerableFormatter{T}"/> with a formatter and maximum count.
+        /// </summary>
+        /// <param name="formatter">The formatter for each element.</param>
+        /// <param name="maxCount">Maximum count of the elements.</param>
         public EnumerableFormatter(IFormatterEx<T> formatter, int maxCount) : base(formatter, maxCount) { }
 
         /// <inhertidoc/>
