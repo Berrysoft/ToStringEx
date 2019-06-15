@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace ToStringEx
+namespace ToStringEx.MethodInfoHelpers
 {
     internal static class VisualBasicMethodInfoFormatterHelper
     {
@@ -38,7 +38,17 @@ namespace ToStringEx
         private static (string pre, string post) GetTypeFullName(ParameterInfo p)
         {
             Type t = p.ParameterType;
-            string pre = t.IsByRef ? "ByRef" : string.Empty;
+            string pre = string.Empty;
+            if (t.IsByRef)
+            {
+                StringBuilder preBuilder = new StringBuilder();
+                if (p.IsIn)
+                    preBuilder.Append("<In> ");
+                else if (p.IsOut)
+                    preBuilder.Append("<Out> ");
+                preBuilder.Append("ByRef ");
+                pre = preBuilder.ToString();
+            }
             if (t.IsByRef) t = t.GetElementType();
             string post;
             if (PreDefinedTypes.TryGetValue(t, out string type))

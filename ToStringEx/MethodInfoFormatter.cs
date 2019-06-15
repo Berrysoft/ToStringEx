@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using ToStringEx.MethodInfoHelpers;
 
 namespace ToStringEx
 {
@@ -17,6 +18,9 @@ namespace ToStringEx
         /// </summary>
         VisualBasic,
         FSharp,
+        /// <summary>
+        /// C++/CLI
+        /// </summary>
         CppCli,
         CppWinRT,
         IronPython
@@ -38,6 +42,8 @@ namespace ToStringEx
                     return CSharpMethodInfoFormatterHelper.FormatInternal(value);
                 case MethodInfoFormatterLanguage.VisualBasic:
                     return VisualBasicMethodInfoFormatterHelper.FormatInternal(value);
+                case MethodInfoFormatterLanguage.CppCli:
+                    return CppCliMethodInfoFormattersHelper.FormatInternal(value);
                 default:
                     throw new NotSupportedException();
             }
