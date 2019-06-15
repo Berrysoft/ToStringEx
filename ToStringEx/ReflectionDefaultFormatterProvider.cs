@@ -21,6 +21,10 @@ namespace ToStringEx
             {
                 formatter = new FuncFormatter<object>(obj => obj.ToString());
             }
+            else if (Attribute.GetCustomAttribute(t, typeof(DefaultFormatterAttribute)) is DefaultFormatterAttribute attr)
+            {
+                formatter = (IFormatterEx)Activator.CreateInstance(attr.FormatterType);
+            }
             else
             {
                 formatter = new ReflectionFormatter();

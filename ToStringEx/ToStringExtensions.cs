@@ -28,7 +28,7 @@ namespace ToStringEx
             foreach (var provider in FormatterProviders)
             {
                 if (provider.TryGetProvider(t, out IFormatterEx formatter))
-                    return obj.ToStringEx(formatter);
+                    return formatter.Format(obj);
             }
             ReflectionDefaultFormatterProvider.Instance.TryGetProvider(t, out IFormatterEx defFormatter);
             return defFormatter.Format(obj);

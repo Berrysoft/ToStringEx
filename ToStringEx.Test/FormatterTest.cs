@@ -81,7 +81,8 @@ namespace ToStringEx.Test
                 { 1, 2, 3, 4, 5 },
                 { 1, 2, 3, 4, 5 },
                 { 1, 2, 3, 4, 5 } } };
-            Assert.AreEqual(@"{{{1, 2, ... 5},
+            Assert.AreEqual(
+@"{{{1, 2, ... 5},
   {1, 2, ... 5},
   ...
   {1, 2, ... 5}},
@@ -133,6 +134,22 @@ namespace ToStringEx.Test
   Key1: 123,
   Key2: abc,
 }", c.ToStringEx(new ReflectionFormatter(true)));
+        }
+
+        class UserDefinedFormatter : IFormatterEx<object>
+        {
+            public Type TargetType => typeof(object);
+
+            public string Format(object value) => "Hello world!";
+        }
+
+        [DefaultFormatter(typeof(UserDefinedFormatter))]
+        class UserDefinedTypeWithDefaultFormatter { }
+
+        [TestMethod]
+        public void DefaultFormatterAttributeTest()
+        {
+            Assert.AreEqual("Hello world!", new UserDefinedTypeWithDefaultFormatter().ToStringEx());
         }
     }
 }
