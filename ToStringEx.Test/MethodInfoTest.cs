@@ -8,7 +8,9 @@ namespace ToStringEx.Test
     {
         private static readonly IFormatterEx<MethodInfo> csFormatter = new MethodInfoFormatter(MethodInfoFormatterLanguage.CSharp);
         private static readonly IFormatterEx<MethodInfo> vbFormatter = new MethodInfoFormatter(MethodInfoFormatterLanguage.VisualBasic);
+        private static readonly IFormatterEx<MethodInfo> fsFormatter = new MethodInfoFormatter(MethodInfoFormatterLanguage.FSharp);
         private static readonly IFormatterEx<MethodInfo> cppFormatter = new MethodInfoFormatter(MethodInfoFormatterLanguage.CppCli);
+        private static readonly IFormatterEx<MethodInfo> cppwinrtFormatter = new MethodInfoFormatter(MethodInfoFormatterLanguage.CppWinRT);
 
         public int BasicMethod(double a) { throw null; }
 
@@ -18,7 +20,9 @@ namespace ToStringEx.Test
             MethodInfo m = typeof(MethodInfoTest).GetMethod("BasicMethod");
             Assert.AreEqual("public int BasicMethod(double a)", m.ToStringEx(csFormatter));
             Assert.AreEqual("Public Function BasicMethod(a As Double) As Integer", m.ToStringEx(vbFormatter));
+            Assert.AreEqual("let BasicMethod (a : double) : int", m.ToStringEx(fsFormatter));
             Assert.AreEqual("int BasicMethod(double a)", m.ToStringEx(cppFormatter));
+            Assert.AreEqual("std::int32_t BasicMethod(double a)", m.ToStringEx(cppwinrtFormatter));
         }
 
         public void BasicVoidMethod() { }
@@ -29,7 +33,9 @@ namespace ToStringEx.Test
             MethodInfo m = typeof(MethodInfoTest).GetMethod("BasicVoidMethod");
             Assert.AreEqual("public void BasicVoidMethod()", m.ToStringEx(csFormatter));
             Assert.AreEqual("Public Sub BasicVoidMethod()", m.ToStringEx(vbFormatter));
+            Assert.AreEqual("let BasicVoidMethod : void", m.ToStringEx(fsFormatter));
             Assert.AreEqual("void BasicVoidMethod()", m.ToStringEx(cppFormatter));
+            Assert.AreEqual("void BasicVoidMethod()", m.ToStringEx(cppwinrtFormatter));
         }
 
         public ref string RefMethod(ref int i1, out int i2, in int i3) { throw null; }
@@ -40,7 +46,35 @@ namespace ToStringEx.Test
             MethodInfo m = typeof(MethodInfoTest).GetMethod("RefMethod");
             Assert.AreEqual("public ref string RefMethod(ref int i1, out int i2, in int i3)", m.ToStringEx(csFormatter));
             Assert.AreEqual("Public ByRef Function RefMethod(ByRef i1 As Integer, <Out> ByRef i2 As Integer, <In> ByRef i3 As Integer) As String", m.ToStringEx(vbFormatter));
-            Assert.AreEqual("System::String^% RefMethod(int% i1, [OutAttribute] int% i2, [InAttribute] int% i3)", m.ToStringEx(cppFormatter));
+            Assert.AreEqual("let RefMethod (i1 : byref<int>) (i2 : outref<int>) (i3 : inref<int>) : byref<string>", m.ToStringEx(fsFormatter));
+            Assert.AreEqual("System::String^% RefMethod(int% i1, [Out] int% i2, [In] int% i3)", m.ToStringEx(cppFormatter));
+            Assert.AreEqual("hstring& RefMethod(std::int32_t& i1, std::int32_t& i2, std::int32_t& i3)", m.ToStringEx(cppwinrtFormatter));
+        }
+
+        public decimal[] ArrayMethod(object[][] objs) { throw null; }
+
+        [TestMethod]
+        public void ArrayMethodTest()
+        {
+            MethodInfo m = typeof(MethodInfoTest).GetMethod("ArrayMethod");
+            Assert.AreEqual("public decimal[] ArrayMethod(object[][] objs)", m.ToStringEx(csFormatter));
+            Assert.AreEqual("Public Function ArrayMethod(objs As Object()()) As Decimal()", m.ToStringEx(vbFormatter));
+            Assert.AreEqual("let ArrayMethod (objs : System.Object[][]) : decimal[]", m.ToStringEx(fsFormatter));
+            Assert.AreEqual("cli::array<System::Decimal>^ ArrayMethod(cli::array<cli::array<System::Object^>^>^ objs)", m.ToStringEx(cppFormatter));
+            Assert.AreEqual("array_view<System::Decimal> ArrayMethod(array_view<array_view<Windows::Foundation::IInspectable>> objs)", m.ToStringEx(cppwinrtFormatter));
+        }
+
+        public unsafe void* PointerMethod(int* p) { throw null; }
+
+        [TestMethod]
+        public void PointerMethodTest()
+        {
+            MethodInfo m = typeof(MethodInfoTest).GetMethod("PointerMethod");
+            Assert.AreEqual("public unsafe void* PointerMethod(int* p)", m.ToStringEx(csFormatter));
+            Assert.AreEqual("Public Function PointerMethod(p As Integer Pointer) As Pointer", m.ToStringEx(vbFormatter));
+            Assert.AreEqual("let PointerMethod (p : int*) : void*", m.ToStringEx(fsFormatter));
+            Assert.AreEqual("void* PointerMethod(int* p)", m.ToStringEx(cppFormatter));
+            Assert.AreEqual("void* PointerMethod(std::int32_t* p)", m.ToStringEx(cppwinrtFormatter));
         }
     }
 }

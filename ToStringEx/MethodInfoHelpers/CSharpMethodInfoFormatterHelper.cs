@@ -11,6 +11,8 @@ namespace ToStringEx.MethodInfoHelpers
         private static readonly Dictionary<Type, string> PreDefinedTypes = new Dictionary<Type, string>
         {
             [typeof(bool)] = "bool",
+            [typeof(byte)] = "byte",
+            [typeof(sbyte)] = "sbyte",
             [typeof(char)] = "char",
             [typeof(short)] = "short",
             [typeof(ushort)] = "ushort",
@@ -20,6 +22,7 @@ namespace ToStringEx.MethodInfoHelpers
             [typeof(ulong)] = "ulong",
             [typeof(float)] = "float",
             [typeof(double)] = "double",
+            [typeof(decimal)] = "decimal",
             [typeof(string)] = "string",
             [typeof(object)] = "object",
             [typeof(void)] = "void"
@@ -34,6 +37,25 @@ namespace ToStringEx.MethodInfoHelpers
             [MethodAttributes.FamORAssem] = "protected internal",
             [MethodAttributes.FamANDAssem] = "private protected"
         };
+
+        private static string GetTypeName(Type t)
+        {
+            Type et = t.GetElementType() ?? t;
+            StringBuilder builder = new StringBuilder();
+            if (PreDefinedTypes.TryGetValue(et, out string type))
+            {
+                builder.Append(type);
+            }
+            else
+            {
+                builder.Append(et == t ? et.FullName : GetTypeName(et)).Replace('/', '.');
+            }
+            if (t.IsArray)
+                builder.Append("[]");
+            else if (t.IsPointer)
+                builder.Append('*');
+            return builder.ToString();
+        }
 
         private static string GetTypeFullName(ParameterInfo p)
         {
@@ -54,16 +76,8 @@ namespace ToStringEx.MethodInfoHelpers
                     builder.Append("ref");
                 }
                 builder.Append(' ');
-                t = t.GetElementType();
             }
-            if (PreDefinedTypes.TryGetValue(t, out string type))
-            {
-                builder.Append(type);
-            }
-            else
-            {
-                builder.Append(t.FullName);
-            }
+            builder.Append(GetTypeName(t));
             return builder.ToString();
         }
 
@@ -72,6 +86,10 @@ namespace ToStringEx.MethodInfoHelpers
             StringBuilder builder = new StringBuilder();
             builder.Append(AccessStringMap[method.Attributes & MethodAttributes.MemberAccessMask]);
             builder.Append(' ');
+            if (method.ReturnType.IsPointer || method.GetParameters().Any(p => p.ParameterType.IsPointer))
+            {
+                builder.Append("unsafe ");
+            }
             builder.Append(GetTypeFullName(method.ReturnParameter));
             builder.Append(' ');
             builder.Append(method.Name);

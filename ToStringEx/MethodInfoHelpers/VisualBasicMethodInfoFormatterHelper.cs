@@ -11,6 +11,8 @@ namespace ToStringEx.MethodInfoHelpers
         private static readonly Dictionary<Type, string> PreDefinedTypes = new Dictionary<Type, string>
         {
             [typeof(bool)] = "Boolean",
+            [typeof(byte)] = "Byte",
+            [typeof(sbyte)] = "SByte",
             [typeof(char)] = "Char",
             [typeof(short)] = "Short",
             [typeof(ushort)] = "UShort",
@@ -20,8 +22,10 @@ namespace ToStringEx.MethodInfoHelpers
             [typeof(ulong)] = "ULong",
             [typeof(float)] = "Single",
             [typeof(double)] = "Double",
+            [typeof(decimal)] = "Decimal",
             [typeof(string)] = "String",
             [typeof(object)] = "Object",
+            [typeof(void)] = string.Empty,
             [typeof(DateTime)] = "Date"
         };
 
@@ -35,35 +39,46 @@ namespace ToStringEx.MethodInfoHelpers
             [MethodAttributes.FamANDAssem] = "Private Protected"
         };
 
+        private static string GetTypeName(Type t)
+        {
+            Type et = t.GetElementType() ?? t;
+            StringBuilder builder = new StringBuilder();
+            if (PreDefinedTypes.TryGetValue(et, out string type))
+            {
+                builder.Append(type);
+            }
+            else
+            {
+                builder.Append(et == t ? et.FullName : GetTypeName(et)).Replace('/', '.');
+            }
+            if (t.IsArray)
+                builder.Append("()");
+            else if (t.IsPointer)
+            {
+                if (et != typeof(void))
+                    builder.Append(' ');
+                builder.Append("Pointer");
+            }
+            return builder.ToString();
+        }
+
         private static (string pre, string post) GetTypeFullName(ParameterInfo p)
         {
             Type t = p.ParameterType;
-            string pre = string.Empty;
+            Type et = t.GetElementType() ?? t;
+            StringBuilder preBuilder = new StringBuilder();
             if (t.IsByRef)
             {
-                StringBuilder preBuilder = new StringBuilder();
                 if (p.IsIn)
                     preBuilder.Append("<In> ");
                 else if (p.IsOut)
                     preBuilder.Append("<Out> ");
                 preBuilder.Append("ByRef ");
-                pre = preBuilder.ToString();
             }
-            if (t.IsByRef) t = t.GetElementType();
-            string post;
-            if (PreDefinedTypes.TryGetValue(t, out string type))
-            {
-                post = $" As {type}";
-            }
-            else if (t == typeof(void))
-            {
-                post = string.Empty;
-            }
-            else
-            {
-                post = $" As {t.FullName}";
-            }
-            return (pre, post);
+            StringBuilder postBuilder = new StringBuilder();
+            if (et != t || (et == t && et != typeof(void)))
+                postBuilder.AppendFormat(" As {0}", GetTypeName(t));
+            return (preBuilder.ToString(), postBuilder.ToString());
         }
 
         public static string FormatInternal(MethodInfo method)

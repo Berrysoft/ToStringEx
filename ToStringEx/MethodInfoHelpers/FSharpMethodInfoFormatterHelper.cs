@@ -1,24 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
 namespace ToStringEx.MethodInfoHelpers
 {
-    internal static class CppCliMethodInfoFormattersHelper
+    internal static class FSharpMethodInfoFormatterHelper
     {
         private static readonly Dictionary<Type, string> PreDefinedTypes = new Dictionary<Type, string>
         {
             [typeof(bool)] = "bool",
-            [typeof(short)] = "short",
-            [typeof(ushort)] = "unsigned short",
+            [typeof(byte)] = "byte",
+            [typeof(sbyte)] = "sbyte",
+            [typeof(char)] = "char",
+            [typeof(short)] = "int16",
+            [typeof(ushort)] = "uint16",
             [typeof(int)] = "int",
-            [typeof(uint)] = "unsigned int",
-            [typeof(long)] = "long",
-            [typeof(ulong)] = "unsigned long",
-            [typeof(float)] = "float",
+            [typeof(uint)] = "uint32",
+            [typeof(long)] = "int64",
+            [typeof(ulong)] = "uint64",
+            [typeof(IntPtr)] = "nativeint",
+            [typeof(UIntPtr)] = "unativeint",
+            [typeof(float)] = "single",
             [typeof(double)] = "double",
+            [typeof(decimal)] = "decimal",
+            [typeof(string)] = "string",
             [typeof(void)] = "void"
         };
 
@@ -31,11 +37,15 @@ namespace ToStringEx.MethodInfoHelpers
             {
                 if (p.IsOut)
                 {
-                    builder.Append("[OutAttribute] ");
+                    builder.Append("outref<");
                 }
                 else if (p.IsIn)
                 {
-                    builder.Append("[InAttribute] ");
+                    builder.Append("inref<");
+                }
+                else
+                {
+                    builder.Append("byref<");
                 }
             }
             if (PreDefinedTypes.TryGetValue(et, out string type))
@@ -44,32 +54,29 @@ namespace ToStringEx.MethodInfoHelpers
             }
             else
             {
-                builder.Append(et.FullName.Replace(".", "::"));
-            }
-            if (et.IsClass)
-            {
-                builder.Append('^');
+                builder.Append(et.FullName).Replace('/', '.');
             }
             if (t.IsByRef)
-            {
-                builder.Append('%');
-            }
+                builder.Append('>');
+            else if (t.IsArray)
+                builder.Append("[]");
             else if (t.IsPointer)
-            {
                 builder.Append('*');
-            }
             return builder.ToString();
         }
 
         public static string FormatInternal(MethodInfo method)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append(GetTypeFullName(method.ReturnParameter));
-            builder.Append(' ');
+            builder.Append("let ");
             builder.Append(method.Name);
-            builder.Append('(');
-            builder.Append(string.Join(", ", method.GetParameters().Select(p => $"{GetTypeFullName(p)} {p.Name}")));
-            builder.Append(')');
+            builder.Append(' ');
+            foreach (var p in method.GetParameters())
+            {
+                builder.AppendFormat("({0} : {1}) ", p.Name, GetTypeFullName(p));
+            }
+            builder.Append(": ");
+            builder.Append(GetTypeFullName(method.ReturnParameter));
             return builder.ToString();
         }
     }
