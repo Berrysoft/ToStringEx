@@ -123,6 +123,9 @@ namespace ToStringEx.Reflection
         public string FormatMethodInfo(MethodInfo method)
         {
             StringBuilder builder = new StringBuilder();
+            bool virt = method.Attributes.HasFlag(MethodAttributes.Virtual);
+            if (virt)
+                builder.Append("virtual ");
             builder.Append(GetTypeFullName(method.ReturnParameter, IsCli));
             builder.Append(' ');
             builder.Append(method.Name);
@@ -132,6 +135,18 @@ namespace ToStringEx.Reflection
                 ps = ps.Append("...");
             builder.Append(string.Join(", ", ps));
             builder.Append(')');
+            if (virt)
+            {
+                if (method.Attributes.HasFlag(MethodAttributes.Abstract))
+                    builder.Append(" = 0");
+                else if (IsCli)
+                {
+                    if (!method.Attributes.HasFlag(MethodAttributes.NewSlot))
+                        builder.Append(" override");
+                    if (method.Attributes.HasFlag(MethodAttributes.Final))
+                        builder.Append(" final");
+                }
+            }
             return builder.ToString();
         }
     }

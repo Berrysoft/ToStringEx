@@ -39,6 +39,25 @@ namespace ToStringEx.Reflection
             [MethodAttributes.FamANDAssem] = "Private Protected"
         };
 
+        private static string GetVTableString(MethodAttributes attr)
+        {
+            StringBuilder builder = new StringBuilder();
+            if (attr.HasFlag(MethodAttributes.Abstract))
+                builder.Append("MustOverride");
+            else if (attr.HasFlag(MethodAttributes.Static))
+                builder.Append("Shared");
+            else if (attr.HasFlag(MethodAttributes.Virtual))
+            {
+                if (attr.HasFlag(MethodAttributes.Final))
+                    builder.Append("NotOverridable ");
+                if (attr.HasFlag(MethodAttributes.NewSlot))
+                    builder.Append("Overridable");
+                else
+                    builder.Append("Overrides");
+            }
+            return builder.ToString();
+        }
+
         private static string GetTypeName(Type t)
         {
             Type et = t.GetElementType() ?? t;
@@ -92,6 +111,12 @@ namespace ToStringEx.Reflection
             StringBuilder builder = new StringBuilder();
             builder.Append(AccessStringMap[method.Attributes & MethodAttributes.MemberAccessMask]);
             builder.Append(' ');
+            var vs = GetVTableString(method.Attributes);
+            if (!string.IsNullOrEmpty(vs))
+            {
+                builder.Append(vs);
+                builder.Append(' ');
+            }
             var (pre, post) = GetTypeFullName(method.ReturnParameter);
             builder.Append(pre);
             builder.Append(method.ReturnType == typeof(void) ? "Sub" : "Function");

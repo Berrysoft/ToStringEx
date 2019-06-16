@@ -77,7 +77,7 @@ namespace ToStringEx.Reflection
         public string FormatMethodInfo(MethodInfo method)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("let ");
+            builder.Append("member ");
             builder.Append(method.Name);
             builder.Append(' ');
             foreach (var p in method.GetParameters())
