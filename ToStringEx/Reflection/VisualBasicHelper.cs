@@ -98,11 +98,14 @@ namespace ToStringEx.Reflection
             builder.Append(' ');
             builder.Append(method.Name);
             builder.Append('(');
-            builder.Append(string.Join(", ", method.GetParameters().Select(p =>
+            var ps = method.GetParameters().Select(p =>
             {
                 var (tpre, tpost) = GetTypeFullName(p);
                 return $"{tpre}{p.Name}{tpost}";
-            })));
+            });
+            if (method.CallingConvention.HasFlag(CallingConventions.VarArgs))
+                ps = ps.Append("ParamArray");
+            builder.Append(string.Join(", ", ps));
             builder.Append(')');
             builder.Append(post);
             return builder.ToString();

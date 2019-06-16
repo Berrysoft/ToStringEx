@@ -90,5 +90,18 @@ namespace ToStringEx.Test
             Assert.AreEqual("void ParamArrayMethod(int a = 1, ... cli::array<System::String^>^ strs)", m.ToStringEx(cppFormatter));
             Assert.AreEqual("void ParamArrayMethod(std::int32_t a = 1, ... array_view<hstring> strs)", m.ToStringEx(cppwinrtFormatter));
         }
+
+        public void VarArgMethod(string fmt, __arglist) { }
+
+        [TestMethod]
+        public void VarArgTest()
+        {
+            MethodInfo m = typeof(MethodInfoTest).GetMethod("VarArgMethod");
+            Assert.AreEqual("public void VarArgMethod(string fmt, __arglist)", m.ToStringEx(csFormatter));
+            Assert.AreEqual("Public Sub VarArgMethod(fmt As String, ParamArray)", m.ToStringEx(vbFormatter));
+            Assert.AreEqual("let VarArgMethod (fmt : string) : void", m.ToStringEx(fsFormatter));
+            Assert.AreEqual("void VarArgMethod(System::String^ fmt, ...)", m.ToStringEx(cppFormatter));
+            Assert.AreEqual("void VarArgMethod(hstring const& fmt, ...)", m.ToStringEx(cppwinrtFormatter));
+        }
     }
 }

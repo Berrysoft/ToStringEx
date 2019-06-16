@@ -98,7 +98,7 @@ namespace ToStringEx.Reflection
             if (p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
                 builder.Append("... ");
             builder.Append(GetTypeName(t, cli));
-            if (!cli && p.IsRetval && t.IsClass && !t.IsByRef && !t.IsPointer)
+            if (!cli && !p.IsRetval && !t.IsArray && t.IsClass && !t.IsByRef && !t.IsPointer)
             {
                 builder.Append(" const&");
             }
@@ -127,7 +127,10 @@ namespace ToStringEx.Reflection
             builder.Append(' ');
             builder.Append(method.Name);
             builder.Append('(');
-            builder.Append(string.Join(", ", method.GetParameters().Select(p => GetFullParameter(p, IsCli))));
+            var ps = method.GetParameters().Select(p => GetFullParameter(p, IsCli));
+            if (method.CallingConvention.HasFlag(CallingConventions.VarArgs))
+                ps = ps.Append("...");
+            builder.Append(string.Join(", ", ps));
             builder.Append(')');
             return builder.ToString();
         }

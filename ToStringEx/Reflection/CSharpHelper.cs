@@ -106,7 +106,10 @@ namespace ToStringEx.Reflection
             builder.Append(' ');
             builder.Append(method.Name);
             builder.Append('(');
-            builder.Append(string.Join(", ", method.GetParameters().Select(GetFullParameter)));
+            var ps = method.GetParameters().Select(GetFullParameter);
+            if (method.CallingConvention.HasFlag(CallingConventions.VarArgs))
+                ps = ps.Append("__arglist");
+            builder.Append(string.Join(", ", ps));
             builder.Append(')');
             return builder.ToString();
         }
