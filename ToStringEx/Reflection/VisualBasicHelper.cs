@@ -8,8 +8,6 @@ namespace ToStringEx.Reflection
 {
     internal class VisualBasicHelper : ILanguageHelper
     {
-        public string Language => "Visual Basic";
-
         private static readonly Dictionary<Type, string> PreDefinedTypes = new Dictionary<Type, string>
         {
             [typeof(bool)] = "Boolean",

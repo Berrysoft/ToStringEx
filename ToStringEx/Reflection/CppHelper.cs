@@ -12,8 +12,6 @@ namespace ToStringEx.Reflection
 
         public bool IsCli { get; }
 
-        public string Language => IsCli ? "C++/CLI" : "C++/WinRT";
-
         private static readonly Dictionary<Type, string> CppCliPreDefinedTypes = new Dictionary<Type, string>
         {
             [typeof(bool)] = "bool",

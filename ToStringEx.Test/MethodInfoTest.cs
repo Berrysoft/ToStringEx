@@ -88,6 +88,7 @@ namespace ToStringEx.Test
             Assert.AreEqual("Public Sub ParamArrayMethod(Optional a As Integer = 1, ParamArray strs As String())", m.ToStringEx(vbFormatter));
             Assert.AreEqual("let ParamArrayMethod ([<Optional; DefaultParameterValue(1)>] a : int) ([<ParamArray>] strs : string[]) : void", m.ToStringEx(fsFormatter));
             Assert.AreEqual("void ParamArrayMethod(int a = 1, ... cli::array<System::String^>^ strs)", m.ToStringEx(cppFormatter));
+            Assert.AreEqual("void ParamArrayMethod(std::int32_t a = 1, ... array_view<hstring> strs)", m.ToStringEx(cppwinrtFormatter));
         }
     }
 }

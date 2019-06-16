@@ -9,8 +9,6 @@ namespace ToStringEx.Reflection
 {
     internal class FSharpHelper : ILanguageHelper
     {
-        public string Language => "F#";
-
         private static readonly Dictionary<Type, string> PreDefinedTypes = new Dictionary<Type, string>
         {
             [typeof(bool)] = "bool",
