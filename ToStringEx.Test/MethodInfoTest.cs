@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToStringEx.Reflection;
 
 namespace ToStringEx.Test
 {
@@ -75,6 +76,18 @@ namespace ToStringEx.Test
             Assert.AreEqual("let PointerMethod (p : int*) : void*", m.ToStringEx(fsFormatter));
             Assert.AreEqual("void* PointerMethod(int* p)", m.ToStringEx(cppFormatter));
             Assert.AreEqual("void* PointerMethod(std::int32_t* p)", m.ToStringEx(cppwinrtFormatter));
+        }
+
+        public void ParamArrayMethod(int a = 1, params string[] strs) { }
+
+        [TestMethod]
+        public void ParamArrayTest()
+        {
+            MethodInfo m = typeof(MethodInfoTest).GetMethod("ParamArrayMethod");
+            Assert.AreEqual("public void ParamArrayMethod(int a = 1, params string[] strs)", m.ToStringEx(csFormatter));
+            Assert.AreEqual("Public Sub ParamArrayMethod(Optional a As Integer = 1, ParamArray strs As String())", m.ToStringEx(vbFormatter));
+            Assert.AreEqual("let ParamArrayMethod ([<Optional; DefaultParameterValue(1)>] a : int) ([<ParamArray>] strs : string[]) : void", m.ToStringEx(fsFormatter));
+            Assert.AreEqual("void ParamArrayMethod(int a = 1, ... cli::array<System::String^>^ strs)", m.ToStringEx(cppFormatter));
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
-using ToStringEx.MethodInfoHelpers;
 
-namespace ToStringEx
+namespace ToStringEx.Reflection
 {
     /// <summary>
     /// Target language for <see cref="MethodInfoFormatter"/>.
@@ -36,6 +36,15 @@ namespace ToStringEx
     /// </summary>
     public class MethodInfoFormatter : IFormatterEx<MethodInfo>
     {
+        private static readonly Dictionary<MethodInfoFormatterLanguage, ILanguageHelper> languageHelpers = new Dictionary<MethodInfoFormatterLanguage, ILanguageHelper>
+        {
+            [MethodInfoFormatterLanguage.CSharp] = new CSharpHelper(),
+            [MethodInfoFormatterLanguage.VisualBasic] = new VisualBasicHelper(),
+            [MethodInfoFormatterLanguage.FSharp] = new FSharpHelper(),
+            [MethodInfoFormatterLanguage.CppCli] = new CppHelper(true),
+            [MethodInfoFormatterLanguage.CppWinRT] = new CppHelper(false)
+        };
+
         /// <summary>
         /// The target language.
         /// </summary>
@@ -53,20 +62,13 @@ namespace ToStringEx
         /// <inhertidoc/>
         public string Format(MethodInfo value)
         {
-            switch (Language)
+            if (languageHelpers.TryGetValue(Language, out ILanguageHelper helper))
             {
-                case MethodInfoFormatterLanguage.CSharp:
-                    return CSharpMethodInfoFormatterHelper.FormatInternal(value);
-                case MethodInfoFormatterLanguage.VisualBasic:
-                    return VisualBasicMethodInfoFormatterHelper.FormatInternal(value);
-                case MethodInfoFormatterLanguage.FSharp:
-                    return FSharpMethodInfoFormatterHelper.FormatInternal(value);
-                case MethodInfoFormatterLanguage.CppCli:
-                    return CppMethodInfoFormatterHelper.FormatInternal(value, true);
-                case MethodInfoFormatterLanguage.CppWinRT:
-                    return CppMethodInfoFormatterHelper.FormatInternal(value, false);
-                default:
-                    throw new NotSupportedException();
+                return helper.FormatMethodInfo(value);
+            }
+            else
+            {
+                return value.ToString();
             }
         }
 

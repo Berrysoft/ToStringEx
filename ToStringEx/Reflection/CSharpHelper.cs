@@ -4,10 +4,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace ToStringEx.MethodInfoHelpers
+namespace ToStringEx.Reflection
 {
-    internal static class CSharpMethodInfoFormatterHelper
+    internal class CSharpHelper : ILanguageHelper
     {
+        public string Language => "C#";
+
         private static readonly Dictionary<Type, string> PreDefinedTypes = new Dictionary<Type, string>
         {
             [typeof(bool)] = "bool",
@@ -65,23 +67,35 @@ namespace ToStringEx.MethodInfoHelpers
             {
                 if (p.IsOut)
                 {
-                    builder.Append("out");
+                    builder.Append("out ");
                 }
                 else if (p.IsIn)
                 {
-                    builder.Append("in");
+                    builder.Append("in ");
                 }
                 else
                 {
-                    builder.Append("ref");
+                    builder.Append("ref ");
                 }
-                builder.Append(' ');
             }
+            if (p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
+                builder.Append("params ");
             builder.Append(GetTypeName(t));
             return builder.ToString();
         }
 
-        public static string FormatInternal(MethodInfo method)
+        private static string GetFullParameter(ParameterInfo p)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append(GetTypeFullName(p));
+            builder.Append(' ');
+            builder.Append(p.Name);
+            if (p.IsOptional)
+                builder.AppendFormat(" = {0}", p.DefaultValue);
+            return builder.ToString();
+        }
+
+        public string FormatMethodInfo(MethodInfo method)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(AccessStringMap[method.Attributes & MethodAttributes.MemberAccessMask]);
@@ -94,7 +108,7 @@ namespace ToStringEx.MethodInfoHelpers
             builder.Append(' ');
             builder.Append(method.Name);
             builder.Append('(');
-            builder.Append(string.Join(", ", method.GetParameters().Select(p => $"{GetTypeFullName(p)} {p.Name}")));
+            builder.Append(string.Join(", ", method.GetParameters().Select(GetFullParameter)));
             builder.Append(')');
             return builder.ToString();
         }

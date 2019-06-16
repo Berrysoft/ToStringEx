@@ -4,10 +4,16 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace ToStringEx.MethodInfoHelpers
+namespace ToStringEx.Reflection
 {
-    internal static class CppMethodInfoFormatterHelper
+    internal class CppHelper : ILanguageHelper
     {
+        public CppHelper(bool cli) => IsCli = cli;
+
+        public bool IsCli { get; }
+
+        public string Language => IsCli ? "C++/CLI" : "C++/WinRT";
+
         private static readonly Dictionary<Type, string> CppCliPreDefinedTypes = new Dictionary<Type, string>
         {
             [typeof(bool)] = "bool",
@@ -91,6 +97,8 @@ namespace ToStringEx.MethodInfoHelpers
                     builder.Append("[In] ");
                 }
             }
+            if (p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
+                builder.Append("... ");
             builder.Append(GetTypeName(t, cli));
             if (!cli && p.IsRetval && t.IsClass && !t.IsByRef && !t.IsPointer)
             {
@@ -103,14 +111,25 @@ namespace ToStringEx.MethodInfoHelpers
             return builder.ToString();
         }
 
-        public static string FormatInternal(MethodInfo method, bool cli)
+        private static string GetFullParameter(ParameterInfo p, bool cli)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append(GetTypeFullName(method.ReturnParameter, cli));
+            builder.Append(GetTypeFullName(p, cli));
+            builder.Append(' ');
+            builder.Append(p.Name);
+            if (p.IsOptional)
+                builder.AppendFormat(" = {0}", p.DefaultValue);
+            return builder.ToString();
+        }
+
+        public string FormatMethodInfo(MethodInfo method)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append(GetTypeFullName(method.ReturnParameter, IsCli));
             builder.Append(' ');
             builder.Append(method.Name);
             builder.Append('(');
-            builder.Append(string.Join(", ", method.GetParameters().Select(p => $"{GetTypeFullName(p, cli)} {p.Name}")));
+            builder.Append(string.Join(", ", method.GetParameters().Select(p => GetFullParameter(p, IsCli))));
             builder.Append(')');
             return builder.ToString();
         }

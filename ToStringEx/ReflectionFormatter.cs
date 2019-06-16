@@ -9,12 +9,11 @@ namespace ToStringEx
     {
         public static IEnumerable<(string Name, string Value)> EnumerateFields(this object obj, IEnumerable<IFormatterEx> formatters)
             => from f in obj.GetType().GetFields()
-               where f.IsPublic
                select (f.Name, f.GetValue(obj).ToStringEx(formatters));
 
         public static IEnumerable<(string Name, string Value)> EnumerateProperties(this object obj, IEnumerable<IFormatterEx> formatters)
             => from p in obj.GetType().GetProperties()
-               where p.CanRead && p.GetGetMethod().IsPublic && p.GetIndexParameters().Length == 0
+               where p.CanRead && p.GetIndexParameters().Length == 0
                select (p.Name, p.GetValue(obj).ToStringEx(formatters));
     }
 

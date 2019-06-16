@@ -4,10 +4,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace ToStringEx.MethodInfoHelpers
+namespace ToStringEx.Reflection
 {
-    internal static class VisualBasicMethodInfoFormatterHelper
+    internal class VisualBasicHelper : ILanguageHelper
     {
+        public string Language => "Visual Basic";
+
         private static readonly Dictionary<Type, string> PreDefinedTypes = new Dictionary<Type, string>
         {
             [typeof(bool)] = "Boolean",
@@ -75,13 +77,19 @@ namespace ToStringEx.MethodInfoHelpers
                     preBuilder.Append("<Out> ");
                 preBuilder.Append("ByRef ");
             }
+            if (p.IsOptional)
+                preBuilder.Append("Optional ");
+            if (p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
+                preBuilder.Append("ParamArray ");
             StringBuilder postBuilder = new StringBuilder();
             if (et != t || (et == t && et != typeof(void)))
                 postBuilder.AppendFormat(" As {0}", GetTypeName(t));
+            if (p.IsOptional)
+                postBuilder.AppendFormat(" = {0}", p.DefaultValue);
             return (preBuilder.ToString(), postBuilder.ToString());
         }
 
-        public static string FormatInternal(MethodInfo method)
+        public string FormatMethodInfo(MethodInfo method)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(AccessStringMap[method.Attributes & MethodAttributes.MemberAccessMask]);
