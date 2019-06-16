@@ -124,23 +124,33 @@ namespace ToStringEx.Test
             MethodInfo vm1 = typeof(UserDefinedClass).GetMethod("VirtualMethod1");
             Assert.AreEqual("public virtual void VirtualMethod1()", vm1.ToStringEx(csFormatter));
             Assert.AreEqual("Public Overridable Sub VirtualMethod1()", vm1.ToStringEx(vbFormatter));
+            Assert.AreEqual("abstract member VirtualMethod1 : void", vm1.ToStringEx(fsFormatter));
             Assert.AreEqual("virtual void VirtualMethod1()", vm1.ToStringEx(cppFormatter));
+            Assert.AreEqual("virtual void VirtualMethod1()", vm1.ToStringEx(cppwinrtFormatter));
             MethodInfo am = typeof(UserDefinedClass).GetMethod("AbstractMethod");
             Assert.AreEqual("public abstract void AbstractMethod()", am.ToStringEx(csFormatter));
             Assert.AreEqual("Public MustOverride Sub AbstractMethod()", am.ToStringEx(vbFormatter));
-            Assert.AreEqual("virtual void AbstractMethod() = 0", am.ToStringEx(cppFormatter));
+            Assert.AreEqual("abstract member AbstractMethod : void", am.ToStringEx(fsFormatter));
+            Assert.AreEqual("virtual void AbstractMethod() abstract", am.ToStringEx(cppFormatter));
+            Assert.AreEqual("virtual void AbstractMethod() = 0", am.ToStringEx(cppwinrtFormatter));
             MethodInfo dvm1 = typeof(UserDerivedClass).GetMethod("VirtualMethod1");
             Assert.AreEqual("public override void VirtualMethod1()", dvm1.ToStringEx(csFormatter));
             Assert.AreEqual("Public Overrides Sub VirtualMethod1()", dvm1.ToStringEx(vbFormatter));
+            Assert.AreEqual("override this.VirtualMethod1 : void", dvm1.ToStringEx(fsFormatter));
             Assert.AreEqual("virtual void VirtualMethod1() override", dvm1.ToStringEx(cppFormatter));
+            Assert.AreEqual("virtual void VirtualMethod1() override", dvm1.ToStringEx(cppwinrtFormatter));
             MethodInfo dvm2 = typeof(UserDerivedClass).GetMethod("VirtualMethod2");
             Assert.AreEqual("public sealed override void VirtualMethod2()", dvm2.ToStringEx(csFormatter));
             Assert.AreEqual("Public NotOverridable Overrides Sub VirtualMethod2()", dvm2.ToStringEx(vbFormatter));
+            Assert.AreEqual("override this.VirtualMethod2 : void", dvm2.ToStringEx(fsFormatter));
             Assert.AreEqual("virtual void VirtualMethod2() override final", dvm2.ToStringEx(cppFormatter));
+            Assert.AreEqual("virtual void VirtualMethod2() override final", dvm2.ToStringEx(cppwinrtFormatter));
             MethodInfo dam = typeof(UserDerivedClass).GetMethod("AbstractMethod");
             Assert.AreEqual("public override void AbstractMethod()", dam.ToStringEx(csFormatter));
             Assert.AreEqual("Public Overrides Sub AbstractMethod()", dam.ToStringEx(vbFormatter));
+            Assert.AreEqual("override this.AbstractMethod : void", dam.ToStringEx(fsFormatter));
             Assert.AreEqual("virtual void AbstractMethod() override", dam.ToStringEx(cppFormatter));
+            Assert.AreEqual("virtual void AbstractMethod() override", dam.ToStringEx(cppwinrtFormatter));
         }
     }
 }

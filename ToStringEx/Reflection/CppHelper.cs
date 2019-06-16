@@ -138,8 +138,8 @@ namespace ToStringEx.Reflection
             if (virt)
             {
                 if (method.Attributes.HasFlag(MethodAttributes.Abstract))
-                    builder.Append(" = 0");
-                else if (IsCli)
+                    builder.Append(IsCli ? " abstract" : " = 0");
+                else
                 {
                     if (!method.Attributes.HasFlag(MethodAttributes.NewSlot))
                         builder.Append(" override");

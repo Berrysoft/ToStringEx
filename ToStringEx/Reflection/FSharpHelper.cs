@@ -77,7 +77,17 @@ namespace ToStringEx.Reflection
         public string FormatMethodInfo(MethodInfo method)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("member ");
+            if (method.Attributes.HasFlag(MethodAttributes.Static))
+                builder.Append("static member ");
+            else if (method.Attributes.HasFlag(MethodAttributes.Virtual))
+            {
+                if (method.Attributes.HasFlag(MethodAttributes.NewSlot))
+                    builder.Append("abstract member ");
+                else
+                    builder.Append("override this.");
+            }
+            else
+                builder.Append("member ");
             builder.Append(method.Name);
             builder.Append(' ');
             foreach (var p in method.GetParameters())
