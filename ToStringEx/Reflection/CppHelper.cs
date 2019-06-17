@@ -104,6 +104,8 @@ namespace ToStringEx.Reflection
             }
             if (t.IsByRef)
             {
+                if (!cli && p.IsIn)
+                    builder.Append(" const");
                 builder.Append(cli ? '%' : '&');
             }
             return builder.ToString();
@@ -133,7 +135,7 @@ namespace ToStringEx.Reflection
             var ps = method.GetParameters().Select(p => GetFullParameter(p, IsCli));
             if (method.CallingConvention.HasFlag(CallingConventions.VarArgs))
                 ps = ps.Append("...");
-            builder.Append(string.Join(", ", ps));
+            builder.AppendJoin(", ", ps);
             builder.Append(')');
             if (virt)
             {

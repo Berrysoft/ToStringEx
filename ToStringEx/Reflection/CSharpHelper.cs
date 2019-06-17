@@ -57,7 +57,7 @@ namespace ToStringEx.Reflection
             return builder.ToString();
         }
 
-        private static string GetTypeName(Type t)
+        private static string GetTypeName(Type t, string[] genericTypes)
         {
             Type et = t.GetElementType() ?? t;
             StringBuilder builder = new StringBuilder();
@@ -67,7 +67,30 @@ namespace ToStringEx.Reflection
             }
             else
             {
-                builder.Append(et == t ? et.FullName : GetTypeName(et)).Replace('/', '.');
+                if (et != t)
+                {
+                    builder.Append(GetTypeName(et, genericTypes));
+                }
+                else
+                {
+                    if (et.IsGenericParameter)
+                    {
+                        builder.Append(genericTypes[et.GenericParameterPosition]);
+                    }
+                    else if (et.IsGenericType)
+                    {
+                        builder.Append(et.Namespace);
+                        builder.Append('.');
+                        builder.Append(et.Name.Substring(0, et.Name.IndexOf('`'))).Replace('/', '.');
+                        builder.Append('<');
+                        builder.AppendJoin(", ", et.GetGenericArguments().Select(tt => genericTypes[tt.GenericParameterPosition]));
+                        builder.Append('>');
+                    }
+                    else
+                    {
+                        builder.Append(et.FullName).Replace('/', '.');
+                    }
+                }
             }
             if (t.IsArray)
                 builder.Append("[]");
@@ -76,7 +99,7 @@ namespace ToStringEx.Reflection
             return builder.ToString();
         }
 
-        private static string GetTypeFullName(ParameterInfo p)
+        private static string GetTypeFullName(ParameterInfo p, string[] genericTypes)
         {
             Type t = p.ParameterType;
             StringBuilder builder = new StringBuilder();
@@ -97,14 +120,14 @@ namespace ToStringEx.Reflection
             }
             if (p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
                 builder.Append("params ");
-            builder.Append(GetTypeName(t));
+            builder.Append(GetTypeName(t, genericTypes));
             return builder.ToString();
         }
 
-        private static string GetFullParameter(ParameterInfo p)
+        private static string GetFullParameter(ParameterInfo p, string[] genericTypes)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append(GetTypeFullName(p));
+            builder.Append(GetTypeFullName(p, genericTypes));
             builder.Append(' ');
             builder.Append(p.Name);
             if (p.IsOptional)
@@ -127,14 +150,21 @@ namespace ToStringEx.Reflection
             {
                 builder.Append("unsafe ");
             }
-            builder.Append(GetTypeFullName(method.ReturnParameter));
+            var genericTypes = method.GetGenericArguments().Select(t => t.FullName ?? t.Name).ToArray();
+            builder.Append(GetTypeFullName(method.ReturnParameter, genericTypes));
             builder.Append(' ');
             builder.Append(method.Name);
+            if (genericTypes.Length > 0)
+            {
+                builder.Append('<');
+                builder.AppendJoin(", ", genericTypes);
+                builder.Append('>');
+            }
             builder.Append('(');
-            var ps = method.GetParameters().Select(GetFullParameter);
+            var ps = method.GetParameters().Select(p => GetFullParameter(p, genericTypes));
             if (method.CallingConvention.HasFlag(CallingConventions.VarArgs))
                 ps = ps.Append("__arglist");
-            builder.Append(string.Join(", ", ps));
+            builder.AppendJoin(", ", ps);
             builder.Append(')');
             return builder.ToString();
         }

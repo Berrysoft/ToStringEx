@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToStringEx.Reflection;
 
@@ -49,7 +52,7 @@ namespace ToStringEx.Test
             Assert.AreEqual("Public ByRef Function RefMethod(ByRef i1 As Integer, <Out> ByRef i2 As Integer, <In> ByRef i3 As Integer) As String", m.ToStringEx(vbFormatter));
             Assert.AreEqual("member RefMethod (i1 : byref<int>) (i2 : outref<int>) (i3 : inref<int>) : byref<string>", m.ToStringEx(fsFormatter));
             Assert.AreEqual("System::String^% RefMethod(int% i1, [Out] int% i2, [In] int% i3)", m.ToStringEx(cppFormatter));
-            Assert.AreEqual("hstring& RefMethod(std::int32_t& i1, std::int32_t& i2, std::int32_t& i3)", m.ToStringEx(cppwinrtFormatter));
+            Assert.AreEqual("hstring& RefMethod(std::int32_t& i1, std::int32_t& i2, std::int32_t const& i3)", m.ToStringEx(cppwinrtFormatter));
         }
 
         public decimal[] ArrayMethod(object[][] objs) { throw null; }
@@ -151,6 +154,15 @@ namespace ToStringEx.Test
             Assert.AreEqual("override this.AbstractMethod : void", dam.ToStringEx(fsFormatter));
             Assert.AreEqual("virtual void AbstractMethod() override", dam.ToStringEx(cppFormatter));
             Assert.AreEqual("virtual void AbstractMethod() override", dam.ToStringEx(cppwinrtFormatter));
+        }
+
+        public T GenericMethod<T>(IEnumerable<T> source) { return default; }
+
+        [TestMethod]
+        public void GenericTest()
+        {
+            MethodInfo m = typeof(MethodInfoTest).GetMethods().First(m => m.Name.StartsWith("GenericMethod"));
+            Assert.AreEqual("public T GenericMethod<T>(System.Collections.Generic.IEnumerable<T> source)", m.ToStringEx(csFormatter));
         }
     }
 }

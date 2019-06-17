@@ -101,7 +101,7 @@ namespace ToStringEx.Reflection
                 bool hasAttr = realAttrs.Length > 0;
                 if (hasAttr)
                     builder.Append("[<");
-                builder.Append(string.Join("; ", realAttrs.Select(attr =>
+                builder.AppendJoin("; ", realAttrs.Select(attr =>
                 {
                     var name = attr.AttributeType.Name;
                     StringBuilder b = new StringBuilder();
@@ -110,7 +110,7 @@ namespace ToStringEx.Reflection
                     if (hasArguments)
                     {
                         b.Append('(');
-                        b.Append(string.Join(", ", attr.ConstructorArguments.Select(arg => arg.Value).Concat(attr.NamedArguments.Select(arg => $"{arg.MemberName}={arg.TypedValue}"))));
+                        b.AppendJoin(", ", attr.ConstructorArguments.Select(arg => arg.Value.ToString()).Concat(attr.NamedArguments.Select(arg => $"{arg.MemberName}={arg.TypedValue}")));
                         b.Append(')');
                     }
                     if (attr.AttributeType == typeof(OptionalAttribute))
@@ -120,7 +120,7 @@ namespace ToStringEx.Reflection
                         b.Append(')');
                     }
                     return b.ToString();
-                })));
+                }));
                 if (hasAttr)
                     builder.Append(">] ");
                 builder.AppendFormat("{0} : {1}", p.Name, GetTypeFullName(p));

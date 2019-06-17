@@ -130,7 +130,7 @@ namespace ToStringEx.Reflection
             });
             if (method.CallingConvention.HasFlag(CallingConventions.VarArgs))
                 ps = ps.Append("ParamArray");
-            builder.Append(string.Join(", ", ps));
+            builder.AppendJoin(", ", ps);
             builder.Append(')');
             builder.Append(post);
             return builder.ToString();

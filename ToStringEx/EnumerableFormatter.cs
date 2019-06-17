@@ -51,29 +51,31 @@ namespace ToStringEx
                 maxCount--;
                 StringBuilder builder = new StringBuilder();
                 builder.Append('{');
-                var e = source.GetEnumerator();
-                if (e.MoveNext())
+                using (var e = source.GetEnumerator())
                 {
-                    builder.Append(func(e.Current));
-                    int i = 1;
-                    for (; i < maxCount && e.MoveNext(); i++)
+                    if (e.MoveNext())
                     {
-                        builder.Append(", ");
                         builder.Append(func(e.Current));
-                    }
-                    if (i == maxCount && e.MoveNext())
-                    {
-                        T c = e.Current;
-                        bool ep = false;
-                        while (e.MoveNext())
+                        int i = 1;
+                        for (; i < maxCount && e.MoveNext(); i++)
                         {
-                            c = e.Current;
-                            ep = true;
+                            builder.Append(", ");
+                            builder.Append(func(e.Current));
                         }
-                        builder.Append(", ");
-                        if (ep)
-                            builder.Append("... ");
-                        builder.Append(func(c));
+                        if (i == maxCount && e.MoveNext())
+                        {
+                            T c = e.Current;
+                            bool ep = false;
+                            while (e.MoveNext())
+                            {
+                                c = e.Current;
+                                ep = true;
+                            }
+                            builder.Append(", ");
+                            if (ep)
+                                builder.Append("... ");
+                            builder.Append(func(c));
+                        }
                     }
                 }
                 builder.Append('}');

@@ -68,19 +68,21 @@ namespace ToStringEx
             else
                 builder.Append(' ');
             var ts = obj.EnumerateFields(Formatters).Concat(obj.EnumerateProperties(Formatters));
-            var e = ts.GetEnumerator();
-            if (e.MoveNext())
+            using (var e = ts.GetEnumerator())
             {
-                if (MultiLine)
-                    builder.Append(' ', 2);
-                builder.AppendFormat("{0}: {1}", e.Current.Name, e.Current.Value);
-                while (e.MoveNext())
+                if (e.MoveNext())
                 {
                     if (MultiLine)
-                        builder.Append(",\r\n  ");
-                    else
-                        builder.Append(", ");
+                        builder.Append(' ', 2);
                     builder.AppendFormat("{0}: {1}", e.Current.Name, e.Current.Value);
+                    while (e.MoveNext())
+                    {
+                        if (MultiLine)
+                            builder.Append(",\r\n  ");
+                        else
+                            builder.Append(", ");
+                        builder.AppendFormat("{0}: {1}", e.Current.Name, e.Current.Value);
+                    }
                 }
             }
             if (MultiLine)
