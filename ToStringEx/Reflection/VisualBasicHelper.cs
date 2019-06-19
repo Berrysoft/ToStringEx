@@ -58,7 +58,7 @@ namespace ToStringEx.Reflection
             return builder.ToString();
         }
 
-        private static string GetTypeName(Type t)
+        private static string GetTypeName(Type t, string[] genericTypes)
         {
             Type et = t.GetElementType() ?? t;
             StringBuilder builder = new StringBuilder();
@@ -68,7 +68,37 @@ namespace ToStringEx.Reflection
             }
             else
             {
-                builder.Append(et == t ? et.FullName : GetTypeName(et)).Replace('/', '.');
+                if (et != t)
+                {
+                    builder.Append(GetTypeName(et, genericTypes));
+                }
+                else
+                {
+                    if (genericTypes != null)
+                    {
+                        if (et.IsGenericParameter)
+                        {
+                            builder.Append(genericTypes[et.GenericParameterPosition]);
+                        }
+                        else if (et.IsGenericType)
+                        {
+                            builder.Append(et.Namespace);
+                            builder.Append('.');
+                            builder.Append(et.Name.Substring(0, et.Name.IndexOf('`'))).Replace('/', '.');
+                            builder.Append("(Of ");
+                            builder.AppendJoin(", ", et.GetGenericArguments().Select(tt => tt.IsGenericParameter ? genericTypes[tt.GenericParameterPosition] : GetTypeName(tt, genericTypes)));
+                            builder.Append(')');
+                        }
+                        else
+                        {
+                            builder.Append(et.FullName ?? et.Name).Replace('/', '.');
+                        }
+                    }
+                    else
+                    {
+                        builder.Append(et.FullName ?? et.Name).Replace('/', '.');
+                    }
+                }
             }
             if (t.IsArray)
                 builder.Append("()");
@@ -81,7 +111,7 @@ namespace ToStringEx.Reflection
             return builder.ToString();
         }
 
-        private static (string pre, string post) GetTypeFullName(ParameterInfo p)
+        private static (string pre, string post) GetTypeFullName(ParameterInfo p, string[] genericTypes)
         {
             Type t = p.ParameterType;
             Type et = t.GetElementType() ?? t;
@@ -100,7 +130,7 @@ namespace ToStringEx.Reflection
                 preBuilder.Append("ParamArray ");
             StringBuilder postBuilder = new StringBuilder();
             if (et != t || (et == t && et != typeof(void)))
-                postBuilder.AppendFormat(" As {0}", GetTypeName(t));
+                postBuilder.AppendFormat(" As {0}", GetTypeName(t, genericTypes));
             if (p.IsOptional)
                 postBuilder.AppendFormat(" = {0}", p.DefaultValue);
             return (preBuilder.ToString(), postBuilder.ToString());
@@ -117,19 +147,24 @@ namespace ToStringEx.Reflection
                 builder.Append(vs);
                 builder.Append(' ');
             }
-            var (pre, post) = GetTypeFullName(method.ReturnParameter);
+            var genericTypes = method.GetGenericArguments().Select(t => GetTypeName(t, null)).ToArray();
+            var (pre, post) = GetTypeFullName(method.ReturnParameter, genericTypes);
             builder.Append(pre);
             builder.Append(method.ReturnType == typeof(void) ? "Sub" : "Function");
             builder.Append(' ');
             builder.Append(method.Name);
+            if (genericTypes.Length > 0)
+            {
+                builder.Append("(Of ");
+                builder.AppendJoin(", ", genericTypes);
+                builder.Append(')');
+            }
             builder.Append('(');
             var ps = method.GetParameters().Select(p =>
             {
-                var (tpre, tpost) = GetTypeFullName(p);
+                var (tpre, tpost) = GetTypeFullName(p, genericTypes);
                 return $"{tpre}{p.Name}{tpost}";
             });
-            if (method.CallingConvention.HasFlag(CallingConventions.VarArgs))
-                ps = ps.Append("ParamArray");
             builder.AppendJoin(", ", ps);
             builder.Append(')');
             builder.Append(post);

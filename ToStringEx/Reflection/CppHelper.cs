@@ -8,10 +8,6 @@ namespace ToStringEx.Reflection
 {
     internal class CppHelper : ILanguageHelper
     {
-        public CppHelper(bool cli) => IsCli = cli;
-
-        public bool IsCli { get; }
-
         private static readonly Dictionary<Type, string> CppCliPreDefinedTypes = new Dictionary<Type, string>
         {
             [typeof(bool)] = "bool",
@@ -29,43 +25,52 @@ namespace ToStringEx.Reflection
             [typeof(void)] = "void"
         };
 
-        private static readonly Dictionary<Type, string> CppWinRTPreDefinedTypes = new Dictionary<Type, string>
-        {
-            [typeof(bool)] = "bool",
-            [typeof(byte)] = "std::uint8_t",
-            [typeof(sbyte)] = "std::int8_t",
-            [typeof(char)] = "wchar_t",
-            [typeof(short)] = "std::int16_t",
-            [typeof(ushort)] = "std::uint16_t",
-            [typeof(int)] = "std::int32_t",
-            [typeof(uint)] = "std::uint32_t",
-            [typeof(long)] = "std::int64_t",
-            [typeof(ulong)] = "std::uint64_t",
-            [typeof(float)] = "float",
-            [typeof(double)] = "double",
-            [typeof(string)] = "hstring",
-            [typeof(object)] = "Windows::Foundation::IInspectable",
-            [typeof(void)] = "void"
-        };
-
-        private static string GetTypeName(Type t, bool cli)
+        private static string GetTypeName(Type t, string[] genericTypes)
         {
             Type et = t.GetElementType() ?? t;
             StringBuilder builder = new StringBuilder();
             if (t.IsArray)
             {
-                if (cli)
-                    builder.Append("cli::array<");
-                else
-                    builder.Append("array_view<");
+                builder.Append("cli::array<");
             }
-            if ((cli ? CppCliPreDefinedTypes : CppWinRTPreDefinedTypes).TryGetValue(et, out string type))
+            if (CppCliPreDefinedTypes.TryGetValue(et, out string type))
             {
                 builder.Append(type);
             }
             else
             {
-                builder.Append(t == et ? et.FullName : GetTypeName(et, cli)).Replace(".", "::").Replace("/", "::");
+                if (et != t)
+                {
+                    builder.Append(GetTypeName(et, genericTypes));
+                }
+                else
+                {
+                    if (genericTypes != null)
+                    {
+                        if (et.IsGenericParameter)
+                        {
+                            builder.Append(genericTypes[et.GenericParameterPosition]);
+                        }
+                        else if (et.IsGenericType)
+                        {
+                            builder.Append(et.Namespace);
+                            builder.Append("::");
+                            builder.Append(et.Name.Substring(0, et.Name.IndexOf('`'))).Replace("/", "::");
+                            builder.Append('<');
+                            builder.AppendJoin(", ", et.GetGenericArguments().Select(tt => tt.IsGenericParameter ? genericTypes[tt.GenericParameterPosition] : GetTypeName(tt, genericTypes)));
+                            builder.Append('>');
+                        }
+                        else
+                        {
+                            builder.Append(et.FullName ?? et.Name).Replace("/", "::");
+                        }
+                    }
+                    else
+                    {
+                        builder.Append(et.FullName ?? et.Name).Replace("/", "::");
+                    }
+                }
+                builder.Replace(".", "::");
             }
             if (t.IsArray)
                 builder.Append('>');
@@ -73,18 +78,18 @@ namespace ToStringEx.Reflection
             {
                 builder.Append('*');
             }
-            else if (cli && t.IsClass && !t.IsByRef)
+            else if (t.IsClass && !t.IsByRef && !t.IsGenericParameter)
             {
                 builder.Append('^');
             }
             return builder.ToString();
         }
 
-        private static string GetTypeFullName(ParameterInfo p, bool cli)
+        private static string GetTypeFullName(ParameterInfo p, string[] genericTypes)
         {
             Type t = p.ParameterType;
             StringBuilder builder = new StringBuilder();
-            if (cli && t.IsByRef)
+            if (t.IsByRef)
             {
                 if (p.IsOut)
                 {
@@ -97,24 +102,18 @@ namespace ToStringEx.Reflection
             }
             if (p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
                 builder.Append("... ");
-            builder.Append(GetTypeName(t, cli));
-            if (!cli && !p.IsRetval && !t.IsArray && t.IsClass && !t.IsByRef && !t.IsPointer)
-            {
-                builder.Append(" const&");
-            }
+            builder.Append(GetTypeName(t, genericTypes));
             if (t.IsByRef)
             {
-                if (!cli && p.IsIn)
-                    builder.Append(" const");
-                builder.Append(cli ? '%' : '&');
+                builder.Append('%');
             }
             return builder.ToString();
         }
 
-        private static string GetFullParameter(ParameterInfo p, bool cli)
+        private static string GetFullParameter(ParameterInfo p, string[] genericTypes)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append(GetTypeFullName(p, cli));
+            builder.Append(GetTypeFullName(p, genericTypes));
             builder.Append(' ');
             builder.Append(p.Name);
             if (p.IsOptional)
@@ -125,14 +124,32 @@ namespace ToStringEx.Reflection
         public string FormatMethodInfo(MethodInfo method)
         {
             StringBuilder builder = new StringBuilder();
+            var genericTypes = method.GetGenericArguments().Select(t => GetTypeName(t, null)).ToArray();
+            if (method.IsGenericMethod)
+            {
+                builder.Append("generic ");
+                builder.Append('<');
+                builder.AppendJoin(", ", method.GetGenericArguments().Where(t => t.FullName == null).Select(t => $"typename {t.Name}"));
+                builder.Append("> ");
+            }
             bool virt = method.Attributes.HasFlag(MethodAttributes.Virtual);
             if (virt)
                 builder.Append("virtual ");
-            builder.Append(GetTypeFullName(method.ReturnParameter, IsCli));
+            builder.Append(GetTypeFullName(method.ReturnParameter, genericTypes));
             builder.Append(' ');
             builder.Append(method.Name);
+            if (method.IsGenericMethod)
+            {
+                var specializedGenericTypes = method.GetGenericArguments().Where(t => t.FullName != null).Select(t => GetTypeName(t, genericTypes)).ToArray();
+                if (specializedGenericTypes.Length > 0)
+                {
+                    builder.Append('<');
+                    builder.AppendJoin(", ", specializedGenericTypes);
+                    builder.Append('>');
+                }
+            }
             builder.Append('(');
-            var ps = method.GetParameters().Select(p => GetFullParameter(p, IsCli));
+            var ps = method.GetParameters().Select(p => GetFullParameter(p, genericTypes));
             if (method.CallingConvention.HasFlag(CallingConventions.VarArgs))
                 ps = ps.Append("...");
             builder.AppendJoin(", ", ps);
@@ -140,7 +157,7 @@ namespace ToStringEx.Reflection
             if (virt)
             {
                 if (method.Attributes.HasFlag(MethodAttributes.Abstract))
-                    builder.Append(IsCli ? " abstract" : " = 0");
+                    builder.Append(" abstract");
                 else
                 {
                     if (!method.Attributes.HasFlag(MethodAttributes.NewSlot))

@@ -24,11 +24,7 @@ namespace ToStringEx.Reflection
         /// <summary>
         /// C++/CLI
         /// </summary>
-        CppCli,
-        /// <summary>
-        /// C++/WinRT
-        /// </summary>
-        CppWinRT
+        CppCli
     }
 
     /// <summary>
@@ -41,8 +37,7 @@ namespace ToStringEx.Reflection
             [MethodInfoFormatterLanguage.CSharp] = new CSharpHelper(),
             [MethodInfoFormatterLanguage.VisualBasic] = new VisualBasicHelper(),
             [MethodInfoFormatterLanguage.FSharp] = new FSharpHelper(),
-            [MethodInfoFormatterLanguage.CppCli] = new CppHelper(true),
-            [MethodInfoFormatterLanguage.CppWinRT] = new CppHelper(false)
+            [MethodInfoFormatterLanguage.CppCli] = new CppHelper()
         };
 
         /// <summary>

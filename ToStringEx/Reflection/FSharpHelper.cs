@@ -30,7 +30,7 @@ namespace ToStringEx.Reflection
             [typeof(void)] = "void"
         };
 
-        private static string GetTypeName(Type t)
+        private static string GetTypeName(Type t, string[] genericTypes)
         {
             Type et = t.GetElementType() ?? t;
             StringBuilder builder = new StringBuilder();
@@ -40,7 +40,37 @@ namespace ToStringEx.Reflection
             }
             else
             {
-                builder.Append(et == t ? et.FullName : GetTypeName(et)).Replace('/', '.');
+                if (et != t)
+                {
+                    builder.Append(GetTypeName(et, genericTypes));
+                }
+                else
+                {
+                    if (genericTypes != null)
+                    {
+                        if (et.IsGenericParameter)
+                        {
+                            builder.Append(genericTypes[et.GenericParameterPosition]);
+                        }
+                        else if (et.IsGenericType)
+                        {
+                            builder.Append(et.Namespace);
+                            builder.Append('.');
+                            builder.Append(et.Name.Substring(0, et.Name.IndexOf('`'))).Replace('/', '.');
+                            builder.Append('<');
+                            builder.AppendJoin(", ", et.GetGenericArguments().Select(tt => tt.IsGenericParameter ? genericTypes[tt.GenericParameterPosition] : GetTypeName(tt, genericTypes)));
+                            builder.Append('>');
+                        }
+                        else
+                        {
+                            builder.Append(et.FullName ?? et.Name).Replace('/', '.');
+                        }
+                    }
+                    else
+                    {
+                        builder.Append(et.FullName ?? $"'{et.Name}").Replace('/', '.');
+                    }
+                }
             }
             if (t.IsArray)
                 builder.Append("[]");
@@ -49,7 +79,7 @@ namespace ToStringEx.Reflection
             return builder.ToString();
         }
 
-        private static string GetTypeFullName(ParameterInfo p)
+        private static string GetTypeFullName(ParameterInfo p, string[] genericTypes)
         {
             Type t = p.ParameterType;
             StringBuilder builder = new StringBuilder();
@@ -68,7 +98,7 @@ namespace ToStringEx.Reflection
                     builder.Append("byref<");
                 }
             }
-            builder.Append(GetTypeName(t));
+            builder.Append(GetTypeName(t, genericTypes));
             if (t.IsByRef)
                 builder.Append('>');
             return builder.ToString();
@@ -88,7 +118,15 @@ namespace ToStringEx.Reflection
             }
             else
                 builder.Append("member ");
+            var genericTypes = method.GetGenericArguments().Select(t => GetTypeName(t, null)).ToArray();
+            var realGenericTypes = method.GetGenericArguments().Where(t => t.FullName == null).Select(t => $"'{t.Name}").ToArray();
             builder.Append(method.Name);
+            if (realGenericTypes.Length > 0)
+            {
+                builder.Append('<');
+                builder.AppendJoin(", ", realGenericTypes);
+                builder.Append('>');
+            }
             builder.Append(' ');
             foreach (var p in method.GetParameters())
             {
@@ -123,11 +161,11 @@ namespace ToStringEx.Reflection
                 }));
                 if (hasAttr)
                     builder.Append(">] ");
-                builder.AppendFormat("{0} : {1}", p.Name, GetTypeFullName(p));
+                builder.AppendFormat("{0} : {1}", p.Name, GetTypeFullName(p, genericTypes));
                 builder.Append(") ");
             }
             builder.Append(": ");
-            builder.Append(GetTypeFullName(method.ReturnParameter));
+            builder.Append(GetTypeFullName(method.ReturnParameter, genericTypes));
             return builder.ToString();
         }
     }

@@ -73,22 +73,29 @@ namespace ToStringEx.Reflection
                 }
                 else
                 {
-                    if (et.IsGenericParameter)
+                    if (genericTypes != null)
                     {
-                        builder.Append(genericTypes[et.GenericParameterPosition]);
-                    }
-                    else if (et.IsGenericType)
-                    {
-                        builder.Append(et.Namespace);
-                        builder.Append('.');
-                        builder.Append(et.Name.Substring(0, et.Name.IndexOf('`'))).Replace('/', '.');
-                        builder.Append('<');
-                        builder.AppendJoin(", ", et.GetGenericArguments().Select(tt => genericTypes[tt.GenericParameterPosition]));
-                        builder.Append('>');
+                        if (et.IsGenericParameter)
+                        {
+                            builder.Append(genericTypes[et.GenericParameterPosition]);
+                        }
+                        else if (et.IsGenericType)
+                        {
+                            builder.Append(et.Namespace);
+                            builder.Append('.');
+                            builder.Append(et.Name.Substring(0, et.Name.IndexOf('`'))).Replace('/', '.');
+                            builder.Append('<');
+                            builder.AppendJoin(", ", et.GetGenericArguments().Select(tt => tt.IsGenericParameter ? genericTypes[tt.GenericParameterPosition] : GetTypeName(tt, genericTypes)));
+                            builder.Append('>');
+                        }
+                        else
+                        {
+                            builder.Append(et.FullName ?? et.Name).Replace('/', '.');
+                        }
                     }
                     else
                     {
-                        builder.Append(et.FullName).Replace('/', '.');
+                        builder.Append(et.FullName ?? et.Name).Replace('/', '.');
                     }
                 }
             }
@@ -150,7 +157,7 @@ namespace ToStringEx.Reflection
             {
                 builder.Append("unsafe ");
             }
-            var genericTypes = method.GetGenericArguments().Select(t => t.FullName ?? t.Name).ToArray();
+            var genericTypes = method.GetGenericArguments().Select(t => GetTypeName(t, null)).ToArray();
             builder.Append(GetTypeFullName(method.ReturnParameter, genericTypes));
             builder.Append(' ');
             builder.Append(method.Name);
