@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToStringEx.Sample.CSharp", 
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "ToStringEx.Sample.VB", "ToStringEx.Sample.VB\ToStringEx.Sample.VB.vbproj", "{B9C1DAA9-00AD-4B2B-96CB-A90C28944545}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToStringEx.Memory", "ToStringEx.Memory\ToStringEx.Memory.csproj", "{5DDF4315-1269-478E-8399-1F4352D291D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToStringEx.Memory", "ToStringEx.Memory\ToStringEx.Memory.csproj", "{5DDF4315-1269-478E-8399-1F4352D291D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToStringEx.Reflection", "ToStringEx.Reflection\ToStringEx.Reflection.csproj", "{2E29F142-BE05-4311-A2B0-AB48AD0E666C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{5DDF4315-1269-478E-8399-1F4352D291D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DDF4315-1269-478E-8399-1F4352D291D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DDF4315-1269-478E-8399-1F4352D291D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E29F142-BE05-4311-A2B0-AB48AD0E666C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E29F142-BE05-4311-A2B0-AB48AD0E666C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E29F142-BE05-4311-A2B0-AB48AD0E666C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E29F142-BE05-4311-A2B0-AB48AD0E666C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

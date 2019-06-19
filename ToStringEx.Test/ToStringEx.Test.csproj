@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ToStringEx.Memory\ToStringEx.Memory.csproj" />
+    <ProjectReference Include="..\ToStringEx.Reflection\ToStringEx.Reflection.csproj" />
     <ProjectReference Include="..\ToStringEx\ToStringEx.csproj" />
   </ItemGroup>
 

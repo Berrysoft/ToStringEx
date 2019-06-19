@@ -1,5 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
+
+#if NETSTANDARD2_0
+[assembly: InternalsVisibleTo("ToStringEx.Reflection")]
+#endif
 
 namespace ToStringEx
 {
