@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 
 namespace ToStringEx.Reflection
 {
@@ -7,6 +8,12 @@ namespace ToStringEx.Reflection
     /// </summary>
     public interface ILanguageHelper
     {
+        /// <summary>
+        /// Format an instance of <see cref="Type"/>.
+        /// </summary>
+        /// <param name="type">The instance of <see cref="Type"/>.</param>
+        /// <returns>A string in target language.</returns>
+        string FormatType(Type type);
         /// <summary>
         /// Format an instance of <see cref="MethodInfo"/>.
         /// </summary>

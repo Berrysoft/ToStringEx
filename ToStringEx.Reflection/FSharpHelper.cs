@@ -34,6 +34,13 @@ namespace ToStringEx.Reflection
         {
             Type et = t.GetElementType() ?? t;
             StringBuilder builder = new StringBuilder();
+            if (t.IsPointer)
+            {
+                if (t == typeof(void*))
+                    return "nativeint";
+                else
+                    builder.Append("nativeptr<");
+            }
             if (PreDefinedTypes.TryGetValue(et, out string type))
             {
                 builder.Append(type);
@@ -75,7 +82,7 @@ namespace ToStringEx.Reflection
             if (t.IsArray)
                 builder.Append("[]");
             else if (t.IsPointer)
-                builder.Append('*');
+                builder.Append('>');
             return builder.ToString();
         }
 
@@ -168,5 +175,7 @@ namespace ToStringEx.Reflection
             builder.Append(GetTypeFullName(method.ReturnParameter, genericTypes));
             return builder.ToString();
         }
+
+        public string FormatType(Type type) => GetTypeName(type, null);
     }
 }

@@ -9,10 +9,10 @@ namespace ToStringEx.Test
     [TestClass]
     public class MethodInfoTest
     {
-        private static readonly IFormatterEx<MethodInfo> csFormatter = new MethodInfoFormatter(MethodInfoFormatterLanguage.CSharp);
-        private static readonly IFormatterEx<MethodInfo> vbFormatter = new MethodInfoFormatter(MethodInfoFormatterLanguage.VisualBasic);
-        private static readonly IFormatterEx<MethodInfo> fsFormatter = new MethodInfoFormatter(MethodInfoFormatterLanguage.FSharp);
-        private static readonly IFormatterEx<MethodInfo> cppFormatter = new MethodInfoFormatter(MethodInfoFormatterLanguage.CppCli);
+        private static readonly IFormatterEx<MethodInfo> csFormatter = new MethodInfoFormatter(ReflectionFormatterLanguage.CSharp);
+        private static readonly IFormatterEx<MethodInfo> vbFormatter = new MethodInfoFormatter(ReflectionFormatterLanguage.VisualBasic);
+        private static readonly IFormatterEx<MethodInfo> fsFormatter = new MethodInfoFormatter(ReflectionFormatterLanguage.FSharp);
+        private static readonly IFormatterEx<MethodInfo> cppFormatter = new MethodInfoFormatter(ReflectionFormatterLanguage.CppCli);
 
         public int BasicMethod(double a) { throw null; }
 
@@ -70,7 +70,7 @@ namespace ToStringEx.Test
             MethodInfo m = typeof(MethodInfoTest).GetMethod("PointerMethod");
             Assert.AreEqual("public unsafe void* PointerMethod(int* p)", m.ToStringEx(csFormatter));
             Assert.AreEqual("Public Function PointerMethod(p As Integer Pointer) As Pointer", m.ToStringEx(vbFormatter));
-            Assert.AreEqual("member PointerMethod (p : int*) : void*", m.ToStringEx(fsFormatter));
+            Assert.AreEqual("member PointerMethod (p : nativeptr<int>) : nativeint", m.ToStringEx(fsFormatter));
             Assert.AreEqual("void* PointerMethod(int* p)", m.ToStringEx(cppFormatter));
         }
 

@@ -175,5 +175,7 @@ namespace ToStringEx.Reflection
             builder.Append(')');
             return builder.ToString();
         }
+
+        public string FormatType(Type type) => GetTypeName(type, null);
     }
 }
