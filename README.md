@@ -1,10 +1,13 @@
 # ToStringEx
 An extension for ToString in .NET Standard.
 
+[![Azure DevOps builds](https://img.shields.io/azure-devops/build/Strawberry-VS/b80fcbf9-15b5-40ea-b168-713b336c7bcb/3.svg)](https://dev.azure.com/Strawberry-VS/ToStringEx/_build?definitionId=3)
+
 |Name|NuGet (preview)|
 |-|-|
 |ToStringEx|[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/ToStringEx.svg)](https://www.nuget.org/packages/ToStringEx/)|
 |ToStringEx.Memory|[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/ToStringEx.Memory.svg)](https://www.nuget.org/packages/ToStringEx.Memory/)|
+|ToStringEx.Reflection|[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/ToStringEx.Reflection.svg)](https://www.nuget.org/packages/ToStringEx.Reflection/)|
 ## Usage
 C#:
 ``` csharp

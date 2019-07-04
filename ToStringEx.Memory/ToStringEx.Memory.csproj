@@ -16,10 +16,7 @@
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/Berrysoft/ToStringEx</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Berrysoft/ToStringEx</PackageProjectUrl>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>An extension for ToString in .NET.</Description>
   </PropertyGroup>
 
   <ItemGroup>
