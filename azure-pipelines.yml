@@ -1,0 +1,52 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  projs: '**/*.csproj'
+  buildConfiguration: 'Release'
+
+steps:
+- task: DotNetCoreInstaller@0
+  inputs:
+    version: "3.0.100-preview6-012264"
+
+- task: DotNetCoreCLI@2
+  inputs:
+    projects: '$(projs)'
+    command: restore
+
+- task: DotNetCoreCLI@2
+  inputs:
+    projects: '$(projs)'
+    command: build
+    arguments: '-c $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    projects: 'ToStringEx.Test/ToStringEx.Test.csproj'
+    command: test
+    publishTestResults: true
+
+- task: DotNetCoreCLI@2
+  inputs:
+    projects: 'ToStringEx/ToStringEx.csproj'
+    configurationToPack: '$(buildConfiguration)'
+    outputDir: '$(Build.ArtifactStagingDirectory)'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    projects: 'ToStringEx.Memory/ToStringEx.Memory.csproj'
+    configurationToPack: '$(buildConfiguration)'
+    outputDir: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    artifactName: 'NuGet'
