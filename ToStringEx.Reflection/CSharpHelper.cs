@@ -73,25 +73,18 @@ namespace ToStringEx.Reflection
                 }
                 else
                 {
-                    if (genericTypes != null)
+                    if (genericTypes != null && et.IsGenericParameter)
                     {
-                        if (et.IsGenericParameter)
-                        {
-                            builder.Append(genericTypes[et.GenericParameterPosition]);
-                        }
-                        else if (et.IsGenericType)
-                        {
-                            builder.Append(et.Namespace);
-                            builder.Append('.');
-                            builder.Append(et.Name.Substring(0, et.Name.IndexOf('`'))).Replace('/', '.');
-                            builder.Append('<');
-                            builder.AppendJoin(", ", et.GetGenericArguments().Select(tt => tt.IsGenericParameter ? genericTypes[tt.GenericParameterPosition] : GetTypeName(tt, genericTypes)));
-                            builder.Append('>');
-                        }
-                        else
-                        {
-                            builder.Append(et.FullName ?? et.Name).Replace('/', '.');
-                        }
+                        builder.Append(genericTypes[et.GenericParameterPosition]);
+                    }
+                    else if (et.IsGenericType)
+                    {
+                        builder.Append(et.Namespace);
+                        builder.Append('.');
+                        builder.Append(et.Name.Substring(0, et.Name.IndexOf('`'))).Replace('/', '.');
+                        builder.Append('<');
+                        builder.AppendJoin(", ", et.GetGenericArguments().Select(tt => genericTypes != null && tt.IsGenericParameter ? genericTypes[tt.GenericParameterPosition] : GetTypeName(tt, genericTypes)));
+                        builder.Append('>');
                     }
                     else
                     {
@@ -177,5 +170,9 @@ namespace ToStringEx.Reflection
         }
 
         public string FormatType(Type type) => GetTypeName(type, null);
+        public string FormatTypeInfo(TypeInfo type) => FormatType(type);
+
+        public string FormatEventInfo(EventInfo eventInfo)
+            => $"event {FormatType(eventInfo.EventHandlerType)} {eventInfo.Name}";
     }
 }

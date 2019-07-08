@@ -15,6 +15,18 @@ namespace ToStringEx.Reflection
         /// <returns>A string in target language.</returns>
         string FormatType(Type type);
         /// <summary>
+        /// Format an instance of <see cref="TypeInfo"/>.
+        /// </summary>
+        /// <param name="type">The instance of <see cref="TypeInfo"/>.</param>
+        /// <returns>A string in target language.</returns>
+        string FormatTypeInfo(TypeInfo type);
+        /// <summary>
+        /// Format an instance of <see cref="EventInfo"/>.
+        /// </summary>
+        /// <param name="eventInfo">The instance of <see cref="EventInfo"/>.</param>
+        /// <returns>A string in target language.</returns>
+        string FormatEventInfo(EventInfo eventInfo);
+        /// <summary>
         /// Format an instance of <see cref="MethodInfo"/>.
         /// </summary>
         /// <param name="method">The instance of <see cref="MethodInfo"/>.</param>

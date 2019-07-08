@@ -1,7 +1,7 @@
 # ToStringEx
 An extension for ToString in .NET Standard.
 
-[![Azure DevOps builds](https://img.shields.io/azure-devops/build/Strawberry-VS/b80fcbf9-15b5-40ea-b168-713b336c7bcb/3.svg)](https://dev.azure.com/Strawberry-VS/ToStringEx/_build?definitionId=3)
+[![Azure DevOps builds](https://strawberry-vs.visualstudio.com/ToStringEx/_apis/build/status/Berrysoft.ToStringEx?branch=master)](https://strawberry-vs.visualstudio.com/ToStringEx/_build?definitionId=3)
 
 |Name|NuGet (preview)|
 |-|-|

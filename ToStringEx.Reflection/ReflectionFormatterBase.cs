@@ -16,10 +16,6 @@ namespace ToStringEx.Reflection
         /// </summary>
         VisualBasic,
         /// <summary>
-        /// F#
-        /// </summary>
-        FSharp,
-        /// <summary>
         /// C++/CLI
         /// </summary>
         CppCli
@@ -37,7 +33,6 @@ namespace ToStringEx.Reflection
         {
             [ReflectionFormatterLanguage.CSharp] = new CSharpHelper(),
             [ReflectionFormatterLanguage.VisualBasic] = new VisualBasicHelper(),
-            [ReflectionFormatterLanguage.FSharp] = new FSharpHelper(),
             [ReflectionFormatterLanguage.CppCli] = new CppHelper()
         };
 
