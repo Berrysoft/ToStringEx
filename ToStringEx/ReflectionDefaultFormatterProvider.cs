@@ -7,6 +7,8 @@ namespace ToStringEx
     /// </summary>
     public class ReflectionDefaultFormatterProvider : IFormatterProviderEx
     {
+        private ReflectionDefaultFormatterProvider() { }
+
         private static readonly ReflectionDefaultFormatterProvider instance = new ReflectionDefaultFormatterProvider();
 
         /// <summary>

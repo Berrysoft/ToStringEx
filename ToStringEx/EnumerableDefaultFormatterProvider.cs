@@ -9,6 +9,8 @@ namespace ToStringEx
     /// </summary>
     public class EnumerableDefaultFormatterProvider : IFormatterProviderEx
     {
+        private EnumerableDefaultFormatterProvider() { }
+
         private static readonly EnumerableDefaultFormatterProvider instance = new EnumerableDefaultFormatterProvider();
 
         /// <summary>

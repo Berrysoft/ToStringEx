@@ -7,6 +7,8 @@ namespace ToStringEx
     /// </summary>
     public class TupleDefaultFormatterProvider : IFormatterProviderEx
     {
+        private TupleDefaultFormatterProvider() { }
+
         private static readonly TupleDefaultFormatterProvider instance = new TupleDefaultFormatterProvider();
 
         /// <summary>

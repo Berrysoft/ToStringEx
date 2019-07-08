@@ -7,6 +7,8 @@ namespace ToStringEx.Memory
     /// </summary>
     public class MemoryDefaultFormatterProvider : IFormatterProviderEx
     {
+        private MemoryDefaultFormatterProvider() { }
+
         private static readonly MemoryDefaultFormatterProvider instance = new MemoryDefaultFormatterProvider();
 
         /// <summary>
