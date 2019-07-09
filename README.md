@@ -3,11 +3,11 @@ An extension for ToString in .NET Standard.
 
 [![Azure DevOps builds](https://strawberry-vs.visualstudio.com/ToStringEx/_apis/build/status/Berrysoft.ToStringEx?branch=master)](https://strawberry-vs.visualstudio.com/ToStringEx/_build?definitionId=3)
 
-|Name|NuGet (preview)|
+|Name|NuGet|
 |-|-|
-|ToStringEx|[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/ToStringEx.svg)](https://www.nuget.org/packages/ToStringEx/)|
-|ToStringEx.Memory|[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/ToStringEx.Memory.svg)](https://www.nuget.org/packages/ToStringEx.Memory/)|
-|ToStringEx.Reflection|[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/ToStringEx.Reflection.svg)](https://www.nuget.org/packages/ToStringEx.Reflection/)|
+|ToStringEx|[![Nuget](https://img.shields.io/nuget/v/ToStringEx.svg)](https://www.nuget.org/packages/ToStringEx/)|
+|ToStringEx.Memory|[![Nuget](https://img.shields.io/nuget/v/ToStringEx.Memory.svg)](https://www.nuget.org/packages/ToStringEx.Memory/)|
+|ToStringEx.Reflection|[![Nuget](https://img.shields.io/nuget/v/ToStringEx.Reflection.svg)](https://www.nuget.org/packages/ToStringEx.Reflection/)|
 ## Usage
 C#:
 ``` csharp

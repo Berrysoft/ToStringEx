@@ -15,27 +15,32 @@ variables:
 
 steps:
 - task: DotNetCoreInstaller@0
+  displayName: 'Install .NET Core SDK 3.0'
   inputs:
     version: "3.0.100-preview6-012264"
 
 - task: DotNetCoreCLI@2
+  displayName: 'Restore projects'
   inputs:
     projects: '$(projs)'
     command: restore
 
 - task: DotNetCoreCLI@2
+  displayName: 'Build all projects'
   inputs:
     projects: '$(projs)'
     command: build
     arguments: '-c $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Test'
   inputs:
     projects: 'ToStringEx.Test/ToStringEx.Test.csproj'
     command: test
     publishTestResults: true
 
 - task: DotNetCoreCLI@2
+  displayName: 'Pack ToStringEx'
   inputs:
     projects: 'ToStringEx/ToStringEx.csproj'
     command: pack
@@ -43,6 +48,7 @@ steps:
     outputDir: '$(Build.ArtifactStagingDirectory)'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Pack ToStringEx.Memory'
   inputs:
     projects: 'ToStringEx.Memory/ToStringEx.Memory.csproj'
     command: pack
@@ -50,6 +56,7 @@ steps:
     outputDir: '$(Build.ArtifactStagingDirectory)'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Pack ToString.Reflection'
   inputs:
     projects: 'ToStringEx.Reflection/ToStringEx.Reflection.csproj'
     command: pack
@@ -57,5 +64,6 @@ steps:
     outputDir: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish'
   inputs:
     artifactName: 'NuGet'
