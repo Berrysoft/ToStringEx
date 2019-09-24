@@ -118,7 +118,7 @@ namespace ToStringEx.Reflection
                     builder.Append("ref ");
                 }
             }
-            if (p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
+            if (p.CustomAttributes.Any() && p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
                 builder.Append("params ");
             builder.Append(GetTypeName(t, genericTypes));
             return builder.ToString();

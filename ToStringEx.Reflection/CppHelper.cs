@@ -93,7 +93,7 @@ namespace ToStringEx.Reflection
                     builder.Append("[In] ");
                 }
             }
-            if (p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
+            if (p.CustomAttributes.Any() && p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
                 builder.Append("... ");
             builder.Append(GetTypeName(t, genericTypes));
             if (t.IsByRef)

@@ -1,0 +1,15 @@
+﻿<Project>
+  <PropertyGroup>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
+    <Version>1.0.3</Version>
+    <Authors>Berrysoft</Authors>
+    <Copyright>Copyright (c) 2019 Berrysoft</Copyright>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>GitHub</RepositoryType>
+    <RepositoryUrl>https://github.com/Berrysoft/ToStringEx</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Berrysoft/ToStringEx</PackageProjectUrl>
+    <Description>An extension for ToString in .NET.</Description>
+  </PropertyGroup>
+</Project>

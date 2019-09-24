@@ -119,7 +119,7 @@ namespace ToStringEx.Reflection
             }
             if (p.IsOptional)
                 preBuilder.Append("Optional ");
-            if (p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
+            if (p.CustomAttributes.Any() && p.GetCustomAttribute(typeof(ParamArrayAttribute)) != null)
                 preBuilder.Append("ParamArray ");
             StringBuilder postBuilder = new StringBuilder();
             if (et != t || (et == t && et != typeof(void)))

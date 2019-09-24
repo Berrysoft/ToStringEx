@@ -17,7 +17,7 @@ steps:
 - task: DotNetCoreInstaller@0
   displayName: 'Install .NET Core SDK 3.0'
   inputs:
-    version: "3.0.100-preview9-014004"
+    version: "3.0.100"
 
 - task: DotNetCoreCLI@2
   displayName: 'Restore projects'
@@ -30,7 +30,7 @@ steps:
   inputs:
     projects: '$(projs)'
     command: build
-    arguments: '-c $(buildConfiguration)'
+    configuration: $(buildConfiguration)
 
 - task: DotNetCoreCLI@2
   displayName: 'Test'

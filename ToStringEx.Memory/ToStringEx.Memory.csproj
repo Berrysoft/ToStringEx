@@ -2,29 +2,17 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.0.3.0</FileVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <Version>1.0.3</Version>
-    <Authors>Berrysoft</Authors>
-    <Copyright>Copyright (c) 2019 Berrysoft</Copyright>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryType>GitHub</RepositoryType>
-    <RepositoryUrl>https://github.com/Berrysoft/ToStringEx</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/Berrysoft/ToStringEx</PackageProjectUrl>
-    <Description>An extension for ToString in .NET.</Description>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="System.Memory" Version="4.5.3" />
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <PackageReference Include="System.Memory" Version="4.5.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ToStringEx\ToStringEx.csproj" />
   </ItemGroup>
+
+  <Import Project="../ver.props" />
 
 </Project>
